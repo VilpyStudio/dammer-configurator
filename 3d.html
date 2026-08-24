@@ -131,6 +131,7 @@
         height: 100%;
         min-height: 560px;
         outline: none;
+        touch-action: none;
         width: 100%;
       }
 
@@ -377,6 +378,7 @@
         </a>
         <div class="topbar-actions">
           <a class="flat-link" href="index.html">2D versie</a>
+          <a class="flat-link" href="360.html">360 render</a>
           <button class="reset-button" type="button" data-reset>Opnieuw instellen</button>
         </div>
       </header>
@@ -528,12 +530,13 @@
 
       const controls = new OrbitControls(camera, renderer.domElement);
       controls.enableDamping = true;
-      controls.dampingFactor = 0.06;
+      controls.dampingFactor = 0.075;
       controls.enablePan = false;
+      controls.enableZoom = true;
       controls.minDistance = 62;
       controls.maxDistance = 160;
       controls.autoRotate = true;
-      controls.autoRotateSpeed = 0.35;
+      controls.autoRotateSpeed = 0.28;
 
       const ambient = new THREE.HemisphereLight(0xffffff, 0xd8ddd5, 2.15);
       scene.add(ambient);
@@ -545,6 +548,10 @@
       const rim = new THREE.DirectionalLight(0xe8fff1, 1.8);
       rim.position.set(44, 18, -30);
       scene.add(rim);
+
+      controls.addEventListener("start", () => {
+        controls.autoRotate = false;
+      });
 
       function materialRole(name) {
         if (roleMaterials.hull.has(name)) return "hull";
