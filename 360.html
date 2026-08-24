@@ -395,7 +395,7 @@
       const FRAME_COUNT = 8;
       const IMAGE_WIDTH = 1280;
       const IMAGE_HEIGHT = 900;
-      const IMAGE_VERSION = "11";
+      const IMAGE_VERSION = "12";
 
       const colors = {
         hull: [
@@ -436,11 +436,12 @@
       const resetButton = document.querySelector("[data-reset]");
       const images = {};
       const frameCache = new Map();
-      const PIXELS_PER_FRAME = 58;
-      const INERTIA_FRICTION = .93;
+      const PIXELS_PER_FRAME = 48;
+      const INERTIA_FRICTION = .90;
       const MIN_VELOCITY = .002;
       let currentFrame = 0;
       let framePosition = 0;
+      let renderedFrame = -1;
       let dragStartX = 0;
       let dragStartFrame = 0;
       let dragging = false;
@@ -555,6 +556,10 @@
 
       function clearFrameCache() {
         frameCache.clear();
+      }
+
+      function nearestFrame(position) {
+        return normalizedFrame(Math.round(position));
       }
 
       function layerToneRange(pixels) {
@@ -705,30 +710,20 @@
         return output;
       }
 
-      function draw(position = framePosition) {
+      function draw(position = framePosition, force = false) {
         if (!images.base) return;
-        const normalized = normalizedFrame(position);
-        const firstFrame = Math.floor(normalized) % FRAME_COUNT;
-        const secondFrame = (firstFrame + 1) % FRAME_COUNT;
-        const mix = normalized - firstFrame;
-
+        const frame = nearestFrame(position);
+        if (!force && frame === renderedFrame) return;
         context.clearRect(0, 0, IMAGE_WIDTH, IMAGE_HEIGHT);
-        context.drawImage(compositeFrame(firstFrame), 0, 0);
-        if (mix > .02 && mix < .98) {
-          context.save();
-          context.globalAlpha = mix;
-          context.drawImage(compositeFrame(secondFrame), 0, 0);
-          context.restore();
-        } else if (mix >= .98) {
-          context.drawImage(compositeFrame(secondFrame), 0, 0);
-        }
-        currentFrame = Math.round(normalized) % FRAME_COUNT;
+        context.drawImage(compositeFrame(frame), 0, 0);
+        currentFrame = frame;
+        renderedFrame = frame;
       }
 
       function setFrame(frame) {
         framePosition = normalizedFrame(frame);
-        currentFrame = Math.round(framePosition) % FRAME_COUNT;
-        draw();
+        currentFrame = nearestFrame(framePosition);
+        draw(framePosition, true);
       }
 
       function stopInertia() {
@@ -740,6 +735,8 @@
         if (dragging) return;
         frameVelocity *= INERTIA_FRICTION;
         if (Math.abs(frameVelocity) < MIN_VELOCITY) {
+          framePosition = nearestFrame(framePosition);
+          draw(framePosition, true);
           stopInertia();
           return;
         }
@@ -766,6 +763,7 @@
             button.addEventListener("click", () => {
               state[role] = color.value;
               clearFrameCache();
+              renderedFrame = -1;
               renderPanels();
               draw();
             });
@@ -776,6 +774,7 @@
           original.onclick = () => {
             state[role] = null;
             clearFrameCache();
+            renderedFrame = -1;
             renderPanels();
             draw();
           };
@@ -825,6 +824,7 @@
         state.cushions = null;
         state.teak = null;
         clearFrameCache();
+        renderedFrame = -1;
         setFrame(0);
         renderPanels();
         draw();
@@ -838,7 +838,7 @@
         link.href = canvas.toDataURL("image/png");
         link.click();
         framePosition = savedPosition;
-        draw();
+        draw(framePosition, true);
       }
 
       function normalizeParam(value) {
