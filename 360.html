@@ -395,7 +395,7 @@
       const FRAME_COUNT = 8;
       const IMAGE_WIDTH = 1280;
       const IMAGE_HEIGHT = 900;
-      const IMAGE_VERSION = "10";
+      const IMAGE_VERSION = "11";
 
       const colors = {
         hull: [
@@ -435,10 +435,19 @@
       const downloadButton = document.querySelector("[data-download]");
       const resetButton = document.querySelector("[data-reset]");
       const images = {};
+      const frameCache = new Map();
+      const PIXELS_PER_FRAME = 58;
+      const INERTIA_FRICTION = .93;
+      const MIN_VELOCITY = .002;
       let currentFrame = 0;
+      let framePosition = 0;
       let dragStartX = 0;
       let dragStartFrame = 0;
       let dragging = false;
+      let lastDragX = 0;
+      let lastDragTime = 0;
+      let frameVelocity = 0;
+      let inertiaFrame = 0;
 
       function frameName(frame) {
         return String(frame).padStart(2, "0");
@@ -540,6 +549,14 @@
         return Math.max(min, Math.min(max, value));
       }
 
+      function normalizedFrame(frame) {
+        return ((frame % FRAME_COUNT) + FRAME_COUNT) % FRAME_COUNT;
+      }
+
+      function clearFrameCache() {
+        frameCache.clear();
+      }
+
       function layerToneRange(pixels) {
         const histogram = new Array(256).fill(0);
         let total = 0;
@@ -625,9 +642,9 @@
 
       let currentShade = null;
 
-      function tintLayer(layer, color) {
+      function tintLayer(layer, color, frame, targetContext) {
         layerContext.clearRect(0, 0, IMAGE_WIDTH, IMAGE_HEIGHT);
-        layerContext.drawImage(images[layer][currentFrame], 0, 0);
+        layerContext.drawImage(images[layer][frame], 0, 0);
         const colorSpec = selectedColor(layer, color);
         currentShade = colorSpec && colorSpec.shade ? colorSpec.shade : null;
         const targetRgb = hexToRgb((colorSpec && colorSpec.render) || color);
@@ -655,24 +672,80 @@
         }
 
         layerContext.putImageData(data, 0, 0);
-        context.drawImage(layerCanvas, 0, 0);
+        targetContext.drawImage(layerCanvas, 0, 0);
         currentShade = null;
       }
 
-      function draw() {
-        if (!images.base) return;
-        context.clearRect(0, 0, IMAGE_WIDTH, IMAGE_HEIGHT);
+      function frameCacheKey(frame) {
+        return [
+          frame,
+          state.hull || "original",
+          state.cushions || "original",
+          state.teak || "original",
+        ].join("|");
+      }
+
+      function compositeFrame(frame) {
+        const key = frameCacheKey(frame);
+        if (frameCache.has(key)) return frameCache.get(key);
+
+        const output = document.createElement("canvas");
+        output.width = IMAGE_WIDTH;
+        output.height = IMAGE_HEIGHT;
+        const outputContext = output.getContext("2d", { willReadFrequently: true });
         const hull = selectedColor("hull", state.hull);
         const hullRender = hull && images.hull && images.hull[hull.asset];
-        context.drawImage(hullRender ? hullRender[currentFrame] : images.base[currentFrame], 0, 0);
+        outputContext.drawImage(hullRender ? hullRender[frame] : images.base[frame], 0, 0);
         Object.entries(state).forEach(([layer, color]) => {
-          if (layer !== "hull" && color) tintLayer(layer, color);
+          if (layer !== "hull" && color) tintLayer(layer, color, frame, outputContext);
         });
+
+        if (frameCache.size > FRAME_COUNT * 2) frameCache.clear();
+        frameCache.set(key, output);
+        return output;
+      }
+
+      function draw(position = framePosition) {
+        if (!images.base) return;
+        const normalized = normalizedFrame(position);
+        const firstFrame = Math.floor(normalized) % FRAME_COUNT;
+        const secondFrame = (firstFrame + 1) % FRAME_COUNT;
+        const mix = normalized - firstFrame;
+
+        context.clearRect(0, 0, IMAGE_WIDTH, IMAGE_HEIGHT);
+        context.drawImage(compositeFrame(firstFrame), 0, 0);
+        if (mix > .02 && mix < .98) {
+          context.save();
+          context.globalAlpha = mix;
+          context.drawImage(compositeFrame(secondFrame), 0, 0);
+          context.restore();
+        } else if (mix >= .98) {
+          context.drawImage(compositeFrame(secondFrame), 0, 0);
+        }
+        currentFrame = Math.round(normalized) % FRAME_COUNT;
       }
 
       function setFrame(frame) {
-        currentFrame = ((frame % FRAME_COUNT) + FRAME_COUNT) % FRAME_COUNT;
+        framePosition = normalizedFrame(frame);
+        currentFrame = Math.round(framePosition) % FRAME_COUNT;
         draw();
+      }
+
+      function stopInertia() {
+        if (inertiaFrame) cancelAnimationFrame(inertiaFrame);
+        inertiaFrame = 0;
+      }
+
+      function runInertia() {
+        if (dragging) return;
+        frameVelocity *= INERTIA_FRICTION;
+        if (Math.abs(frameVelocity) < MIN_VELOCITY) {
+          stopInertia();
+          return;
+        }
+        framePosition = normalizedFrame(framePosition + frameVelocity * 16.67);
+        draw();
+        inertiaFrame = requestAnimationFrame(runInertia);
       }
 
       function renderPanels() {
@@ -692,6 +765,7 @@
             button.title = color.name;
             button.addEventListener("click", () => {
               state[role] = color.value;
+              clearFrameCache();
               renderPanels();
               draw();
             });
@@ -701,6 +775,7 @@
 
           original.onclick = () => {
             state[role] = null;
+            clearFrameCache();
             renderPanels();
             draw();
           };
@@ -711,40 +786,59 @@
       }
 
       function startDrag(event) {
+        stopInertia();
         dragging = true;
         stage.classList.add("dragging");
         dragStartX = event.clientX;
-        dragStartFrame = currentFrame;
+        dragStartFrame = framePosition;
+        lastDragX = event.clientX;
+        lastDragTime = performance.now();
+        frameVelocity = 0;
         stage.setPointerCapture(event.pointerId);
       }
 
       function moveDrag(event) {
         if (!dragging) return;
-        const frameDelta = Math.round((event.clientX - dragStartX) / 42);
-        setFrame(dragStartFrame - frameDelta);
+        const now = performance.now();
+        const elapsed = Math.max(now - lastDragTime, 1);
+        const deltaX = event.clientX - dragStartX;
+        const stepX = event.clientX - lastDragX;
+        framePosition = normalizedFrame(dragStartFrame - deltaX / PIXELS_PER_FRAME);
+        frameVelocity = -(stepX / PIXELS_PER_FRAME) / elapsed;
+        lastDragX = event.clientX;
+        lastDragTime = now;
+        draw();
       }
 
       function endDrag(event) {
         dragging = false;
         stage.classList.remove("dragging");
         if (stage.hasPointerCapture(event.pointerId)) stage.releasePointerCapture(event.pointerId);
+        if (Math.abs(frameVelocity) >= MIN_VELOCITY) {
+          stopInertia();
+          inertiaFrame = requestAnimationFrame(runInertia);
+        }
       }
 
       function reset() {
         state.hull = null;
         state.cushions = null;
         state.teak = null;
+        clearFrameCache();
         setFrame(0);
         renderPanels();
         draw();
       }
 
       function downloadImage() {
-        draw();
+        const savedPosition = framePosition;
+        setFrame(Math.round(framePosition));
         const link = document.createElement("a");
         link.download = "mijn-dammer-360-configuratie.png";
         link.href = canvas.toDataURL("image/png");
         link.click();
+        framePosition = savedPosition;
+        draw();
       }
 
       function normalizeParam(value) {
@@ -764,7 +858,7 @@
         });
 
         const frame = Number.parseInt(params.get("frame"), 10);
-        if (Number.isFinite(frame)) currentFrame = ((frame % FRAME_COUNT) + FRAME_COUNT) % FRAME_COUNT;
+        if (Number.isFinite(frame)) setFrame(frame);
       }
 
       stage.addEventListener("pointerdown", startDrag);
