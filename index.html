@@ -336,31 +336,36 @@
 
         .viewer {
           grid-template-rows: auto auto auto;
-          padding: 20px 16px 10px;
+          padding: 18px 16px 10px;
         }
 
         .viewer-copy span {
-          font-size: 11px;
-          margin-bottom: 8px;
+          font-size: 10px;
+          margin-bottom: 7px;
         }
 
         .viewer-copy h1 {
-          font-size: clamp(28px, 9vw, 38px);
-          max-width: 360px;
+          font-size: clamp(24px, 7.6vw, 31px);
+          line-height: 1.04;
+          max-width: 310px;
         }
 
         .stage {
-          margin: -12px -34px -20px;
+          margin: 8px 0 -8px;
+          overflow: hidden;
         }
 
         .stage canvas {
           max-height: none;
-          max-width: none;
-          width: min(132vw, 620px);
+          max-width: 100%;
+          transform: translateY(-5%);
+          width: 100%;
         }
 
         .viewer-note {
-          margin-top: 0;
+          line-height: 1.35;
+          margin-top: -10px;
+          padding: 0 8px;
         }
 
         .controls {
