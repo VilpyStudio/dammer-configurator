@@ -488,7 +488,7 @@
       const roleMaterials = {
         hull: new Set(["Body"]),
         cushions: new Set(["Leather", "Leather Used Red Diamon Quilted.002", "Leather Used Red Diamon Quilted.004"]),
-        teak: new Set(["Wood Plank", "Wood Plank.001", "Wood Plank_3"]),
+        teak: new Set(["Wood Plank", "Wood Plank.001", "Wood Plank_3", "Wood.001"]),
       };
 
       const fixedMaterialStyles = {
@@ -505,7 +505,6 @@
         "Inner_body": { color: "#f1ede7", roughness: 0.5, metalness: 0 },
         "Material_001": { color: "#f1ede7", roughness: 0.5, metalness: 0 },
         "Material_003": { color: "#f1ede7", roughness: 0.5, metalness: 0 },
-        "Wood.001": { color: "#a16c3f", roughness: 0.5, metalness: 0 },
         "metal": { color: "#c4c4bc", roughness: 0.2, metalness: 0.85 },
       };
 
@@ -800,30 +799,49 @@
         material.needsUpdate = true;
       }
 
-      function applyRoleLook(material, role, color) {
+      function restoreOriginalMaps(material, role) {
         const hasOriginalTexture = Boolean(material.userData.originalMap);
-        const selectedColor = color || (hasOriginalTexture && role !== "hull" ? "#ffffff" : defaultColors[role]);
+        material.color.set(hasOriginalTexture && role !== "hull" ? "#ffffff" : defaultColors[role]);
+        material.map = material.userData.originalMap || null;
+        material.normalMap = material.userData.originalNormalMap || null;
+        material.roughnessMap = material.userData.originalRoughnessMap || null;
+        material.metalnessMap = material.userData.originalMetalnessMap || null;
+        material.bumpMap = null;
+        material.bumpScale = 0;
+      }
+
+      function applyRoleLook(material, role, color) {
+        const hasCustomColor = Boolean(color);
+        const selectedColor = color || defaultColors[role];
         material.userData.role = role;
 
         if (role === "teak") {
-          material.color.set(selectedColor);
-          material.map = material.userData.originalMap || null;
-          material.normalMap = material.userData.originalNormalMap || null;
-          material.roughnessMap = material.userData.originalRoughnessMap || null;
-          material.metalnessMap = material.userData.originalMetalnessMap || null;
-          material.bumpMap = null;
-          material.bumpScale = 0;
-          material.roughness = 0.74;
+          if (hasCustomColor) {
+            material.color.set("#ffffff");
+            material.map = getTeakTexture(selectedColor);
+            material.normalMap = null;
+            material.roughnessMap = null;
+            material.metalnessMap = null;
+            material.bumpMap = getTeakBumpTexture();
+            material.bumpScale = 0.03;
+          } else {
+            restoreOriginalMaps(material, role);
+          }
+          material.roughness = hasCustomColor ? 0.66 : 0.74;
           material.metalness = 0;
         } else if (role === "cushions") {
-          material.color.set(selectedColor);
-          material.map = material.userData.originalMap || null;
-          material.normalMap = material.userData.originalNormalMap || null;
-          material.roughnessMap = material.userData.originalRoughnessMap || null;
-          material.metalnessMap = material.userData.originalMetalnessMap || null;
-          material.bumpMap = null;
-          material.bumpScale = 0;
-          material.roughness = 0.82;
+          if (hasCustomColor) {
+            material.color.set("#ffffff");
+            material.map = getCushionTexture(selectedColor);
+            material.normalMap = null;
+            material.roughnessMap = null;
+            material.metalnessMap = null;
+            material.bumpMap = getCushionBumpTexture();
+            material.bumpScale = 0.022;
+          } else {
+            restoreOriginalMaps(material, role);
+          }
+          material.roughness = 0.84;
           material.metalness = 0;
         } else {
           material.color.set(selectedColor);
@@ -834,6 +852,8 @@
           material.metalness = 0.38;
         }
 
+        if (material.map) material.map.needsUpdate = true;
+        if (material.bumpMap) material.bumpMap.needsUpdate = true;
         material.needsUpdate = true;
       }
 
@@ -886,9 +906,8 @@
       }
 
       function setRoleColor(role, value) {
-        const color = value || defaultColors[role];
         configurableMaterials[role].forEach((material) => {
-          applyRoleLook(material, role, color);
+          applyRoleLook(material, role, value);
         });
       }
 
@@ -968,7 +987,7 @@
       downloadButton.addEventListener("click", downloadImage);
 
       new GLTFLoader().load(
-        "images/dammer-boat.glb?v=5",
+        "images/dammer-boat.glb?v=6",
         (gltf) => {
           const model = gltf.scene;
           model.traverse((object) => {
