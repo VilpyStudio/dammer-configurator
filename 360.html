@@ -311,12 +311,60 @@
         }
 
         .viewer {
-          min-height: 660px;
+          min-height: auto;
         }
 
         .controls {
           border-left: 0;
           border-top: 1px solid var(--line);
+        }
+      }
+
+      @media (max-width: 640px) {
+        .topbar {
+          height: 64px;
+          padding: 0 18px;
+        }
+
+        .brand img {
+          width: 178px;
+        }
+
+        .reset-button {
+          font-size: 12px;
+        }
+
+        .viewer {
+          grid-template-rows: auto auto auto;
+          padding: 20px 16px 10px;
+        }
+
+        .viewer-copy span {
+          font-size: 11px;
+          margin-bottom: 8px;
+        }
+
+        .viewer-copy h1 {
+          font-size: clamp(28px, 9vw, 38px);
+          max-width: 360px;
+        }
+
+        .stage {
+          margin: -12px -34px -20px;
+        }
+
+        .stage canvas {
+          max-height: none;
+          max-width: none;
+          width: min(132vw, 620px);
+        }
+
+        .viewer-note {
+          margin-top: 0;
+        }
+
+        .controls {
+          padding: 28px 22px 36px;
         }
       }
     </style>
