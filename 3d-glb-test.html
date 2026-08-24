@@ -809,8 +809,8 @@
 
       function restoreOriginalMaps(material, role) {
         const hasOriginalTexture = Boolean(material.userData.originalMap);
-        material.color.set(hasOriginalTexture && role !== "hull" ? "#ffffff" : defaultColors[role]);
-        material.map = material.userData.originalMap || null;
+        material.color.set(hasOriginalTexture && role === "teak" ? "#ffffff" : defaultColors[role]);
+        material.map = role === "cushions" ? null : material.userData.originalMap || null;
         material.normalMap = material.userData.originalNormalMap || null;
         material.roughnessMap = material.userData.originalRoughnessMap || null;
         material.metalnessMap = material.userData.originalMetalnessMap || null;
@@ -844,9 +844,14 @@
           material.roughness = hasCustomColor ? 0.7 : 0.76;
           material.metalness = 0;
         } else if (role === "cushions") {
-          if (material.userData.originalMap) {
+          if (
+            material.userData.originalMap ||
+            material.userData.originalNormalMap ||
+            material.userData.originalRoughnessMap ||
+            material.userData.originalMetalnessMap
+          ) {
             material.color.set(selectedColor);
-            material.map = material.userData.originalMap;
+            material.map = null;
             material.normalMap = material.userData.originalNormalMap || null;
             material.roughnessMap = material.userData.originalRoughnessMap || null;
             material.metalnessMap = material.userData.originalMetalnessMap || null;
