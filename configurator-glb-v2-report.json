@@ -1,0 +1,121 @@
+{
+  "source": "/Users/basdewildt/Documents/New project/boat3-configurator/images/dammer-boat.glb",
+  "output": "/Users/basdewildt/Documents/New project/boat3-configurator/images/dammer-boat-configurator-v2.glb",
+  "materials": [
+    {
+      "old": "Wood Plank.001",
+      "new": "config_teak",
+      "role": "teak"
+    },
+    {
+      "old": "Very dark red wood_2",
+      "new": "fixed_dark_trim",
+      "role": "fixed"
+    },
+    {
+      "old": "White plastic",
+      "new": "fixed_white_plastic",
+      "role": "fixed"
+    },
+    {
+      "old": "Very dark red wood",
+      "new": "fixed_dark_trim",
+      "role": "fixed"
+    },
+    {
+      "old": "Wood Plank_3",
+      "new": "config_teak",
+      "role": "teak"
+    },
+    {
+      "old": "Leather",
+      "new": "config_cushions",
+      "role": "cushions"
+    },
+    {
+      "old": "Leather Used Red Diamon Quilted.002",
+      "new": "config_cushions",
+      "role": "cushions"
+    },
+    {
+      "old": "Wood Plank",
+      "new": "config_teak",
+      "role": "teak"
+    },
+    {
+      "old": "Body",
+      "new": "config_hull",
+      "role": "hull"
+    },
+    {
+      "old": "Stainless steel",
+      "new": "fixed_metal",
+      "role": "fixed"
+    },
+    {
+      "old": "Scratched black metal",
+      "new": "fixed_black_metal",
+      "role": "fixed"
+    },
+    {
+      "old": "Stainless steel",
+      "new": "fixed_metal",
+      "role": "fixed"
+    },
+    {
+      "old": "Black plastic",
+      "new": "fixed_black_plastic",
+      "role": "fixed"
+    },
+    {
+      "old": "Blur Translucent Glass (glass)",
+      "new": "fixed_glass",
+      "role": "fixed"
+    },
+    {
+      "old": "Stainless steel",
+      "new": "fixed_metal",
+      "role": "fixed"
+    },
+    {
+      "old": "Wood.001",
+      "new": "fixed_steering_wood",
+      "role": "fixed"
+    },
+    {
+      "old": "Steel with procedural imperfections",
+      "new": "fixed_metal",
+      "role": "fixed"
+    },
+    {
+      "old": "Black wood",
+      "new": "fixed_black_wood",
+      "role": "fixed"
+    },
+    {
+      "old": "Inner_body",
+      "new": "fixed_inner_body",
+      "role": "fixed"
+    },
+    {
+      "old": "Material_001",
+      "new": "fixed_inner_body",
+      "role": "fixed"
+    },
+    {
+      "old": "Material_003",
+      "new": "fixed_inner_body",
+      "role": "fixed"
+    },
+    {
+      "old": "Very dark red wood3",
+      "new": "fixed_dark_trim",
+      "role": "fixed"
+    },
+    {
+      "old": "metal",
+      "new": "fixed_metal",
+      "role": "fixed"
+    }
+  ]
+}

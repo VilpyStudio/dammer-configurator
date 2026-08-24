@@ -485,12 +485,21 @@
       };
 
       const roleMaterials = {
-        hull: new Set(["Body"]),
-        cushions: new Set(["Leather", "Leather Used Red Diamon Quilted.002", "Leather Used Red Diamon Quilted.004"]),
-        teak: new Set(["Wood Plank", "Wood Plank.001", "Wood Plank_3", "Wood.001"]),
+        hull: new Set(["config_hull"]),
+        cushions: new Set(["config_cushions"]),
+        teak: new Set(["config_teak"]),
       };
 
       const fixedMaterialStyles = {
+        "fixed_white_plastic": { color: "#f2f1ec", roughness: 0.48, metalness: 0 },
+        "fixed_inner_body": { color: "#f1ede7", roughness: 0.5, metalness: 0 },
+        "fixed_dark_trim": { color: "#4a1c17", roughness: 0.42, metalness: 0, clearMaps: true },
+        "fixed_steering_wood": { color: "#8c562f", roughness: 0.46, metalness: 0 },
+        "fixed_metal": { color: "#c4c4bc", roughness: 0.22, metalness: 0.85 },
+        "fixed_black_metal": { color: "#111410", roughness: 0.28, metalness: 0.65 },
+        "fixed_black_plastic": { color: "#111410", roughness: 0.42, metalness: 0 },
+        "fixed_black_wood": { color: "#17110f", roughness: 0.5, metalness: 0 },
+        "fixed_glass": { color: "#dbe7e4", roughness: 0.12, metalness: 0, opacity: 0.36 },
         "White plastic": { color: "#f2f1ec", roughness: 0.48, metalness: 0 },
         "Very dark red wood": { color: "#4a1c17", roughness: 0.42, metalness: 0, clearMaps: true },
         "Very dark red wood_2": { color: "#4a1c17", roughness: 0.42, metalness: 0, clearMaps: true },
@@ -986,7 +995,7 @@
       downloadButton.addEventListener("click", downloadImage);
 
       new GLTFLoader().load(
-        "images/dammer-boat.glb?v=6",
+        "images/dammer-boat-configurator-v2.glb?v=1",
         (gltf) => {
           const model = gltf.scene;
           model.traverse((object) => {
