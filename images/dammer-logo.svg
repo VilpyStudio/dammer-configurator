@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg"
+     width="300mm" height="45.196mm" viewBox="0 0 1686 254"
+     role="img" aria-labelledby="title desc">
+  <title id="title">DAMMER 700 zwart drukwerklogo</title>
+  <desc id="desc">Handmatig geometrisch opgebouwd DAMMER 700-logo, volledig zwart.</desc>
+  <metadata>
+    Print master version 4. Hand-drawn native vector outlines based on the
+    approved DAMMER 700 design. No fonts, text, raster images, clipping masks,
+    strokes, filters, gradients or transparency effects. All straight edges
+    are mathematically straight; repeated elements are exactly symmetric.
+    Single colour: #000000.
+  </metadata>
+  <g shape-rendering="geometricPrecision">
+    <path id="dammer-700-wordmark" d="M 139,58 H 241 C 281,58 305,79 305,113 V 125 C 305,160 282,180 243,180 H 139 Z M 175,88 V 150 H 244 C 261,150 270,142 270,128 V 110 C 270,95 261,88 244,88 Z M 311,180 L 389,58 H 421 L 500,180 H 461 L 445,155 H 365 L 349,180 Z M 383,126 H 427 L 405,92 Z M 512,180 V 58 H 546 L 607.5,137 L 670,58 H 705 V 180 H 670 V 109 L 621,171 H 594 L 547,109 V 180 Z M 724,180 V 58 H 758 L 819.5,137 L 883,58 H 918 V 180 H 883 V 109 L 833,171 H 806 L 759,109 V 180 Z M 937,58 H 1085 V 87 H 972 V 104 H 1070 V 132 H 972 V 150 H 1085 V 180 H 937 Z M 1104,180 V 58 H 1218 C 1245,58 1260,72 1260,96 C 1260,117 1249,130 1226,135 L 1264,180 H 1223 L 1185,136 H 1140 V 180 Z M 1140,87 V 108 H 1215 C 1222,108 1226,104 1226,97.5 C 1226,91 1222,87 1215,87 Z M 1316,62 H 1426 V 85 L 1362,173 H 1333 L 1396,86 H 1316 Z M 1466,62 H 1518 C 1537,62 1547,72 1547,91 V 146 C 1547,165 1537,175 1518,175 H 1466 C 1447,175 1437,165 1437,146 V 91 C 1437,72 1447,62 1466,62 Z M 1469,86 C 1464,86 1461,90 1461,96 V 141 C 1461,147 1464,150 1469,150 H 1515 C 1520,150 1523,147 1523,141 V 96 C 1523,90 1520,86 1515,86 Z M 1588,62 H 1643 C 1662,62 1672,72 1672,91 V 146 C 1672,165 1662,175 1643,175 H 1588 C 1569,175 1559,165 1559,146 V 91 C 1559,72 1569,62 1588,62 Z M 1591,86 C 1586,86 1583,90 1583,96 V 141 C 1583,147 1586,150 1591,150 H 1640 C 1645,150 1648,147 1648,141 V 96 C 1648,90 1645,86 1640,86 Z" fill="#000000" fill-rule="evenodd"/>
+    <path id="amsterdam-crosses" d="M 14,28 L 28,14 L 48,34 L 68,14 L 82,28 L 62,48 L 82,68 L 68,82 L 48,62 L 28,82 L 14,68 L 34,48 Z M 14,108 L 28,94 L 48,114 L 68,94 L 82,108 L 62,128 L 82,148 L 68,162 L 48,142 L 28,162 L 14,148 L 34,128 Z M 14,188 L 28,174 L 48,194 L 68,174 L 82,188 L 62,208 L 82,228 L 68,242 L 48,222 L 28,242 L 14,228 L 34,208 Z" fill="#000000" fill-rule="nonzero"/>
+  </g>
+</svg>

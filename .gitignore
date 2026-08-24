@@ -1,0 +1,4 @@
+.DS_Store
+blender-inspection.json
+inspect_boat_blend.py
+render_boat_layers.py
