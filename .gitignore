@@ -7,3 +7,7 @@ inspect_material_nodes.py
 material-node-inspection.json
 render_360_layers.py
 images/360/
+tmp/
+blender-live-*.json
+blender-original-export-report.json
+images/dammer-boat-blender-original-export.glb

@@ -809,7 +809,7 @@
 
       function restoreOriginalMaps(material, role) {
         const hasOriginalTexture = Boolean(material.userData.originalMap);
-        material.color.set(hasOriginalTexture && role !== "hull" ? defaultColors[role] : defaultColors[role]);
+        material.color.set(hasOriginalTexture && role !== "hull" ? "#ffffff" : defaultColors[role]);
         material.map = material.userData.originalMap || null;
         material.normalMap = material.userData.originalNormalMap || null;
         material.roughnessMap = material.userData.originalRoughnessMap || null;
@@ -1007,7 +1007,7 @@
       downloadButton.addEventListener("click", downloadImage);
 
       new GLTFLoader().load(
-        "images/dammer-boat-configurator-v2.glb?v=1",
+        "images/dammer-boat-blender-v3.glb?v=1",
         (gltf) => {
           const model = gltf.scene;
           model.traverse((object) => {

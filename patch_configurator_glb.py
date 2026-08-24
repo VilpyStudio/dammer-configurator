@@ -1,11 +1,12 @@
 import json
 import struct
+import sys
 from pathlib import Path
 
 ROOT = Path("/Users/basdewildt/Documents/New project/boat3-configurator")
-SOURCE_GLB = ROOT / "images" / "dammer-boat.glb"
-OUT_GLB = ROOT / "images" / "dammer-boat-configurator-v2.glb"
-OUT_REPORT = ROOT / "configurator-glb-v2-report.json"
+SOURCE_GLB = Path(sys.argv[1]) if len(sys.argv) > 1 else ROOT / "images" / "dammer-boat.glb"
+OUT_GLB = Path(sys.argv[2]) if len(sys.argv) > 2 else ROOT / "images" / "dammer-boat-configurator-v2.glb"
+OUT_REPORT = Path(sys.argv[3]) if len(sys.argv) > 3 else ROOT / "configurator-glb-v2-report.json"
 
 CONFIG_NAMES = {
     "Body": ("config_hull", [0.002, 0.002, 0.001, 1.0], 0.22, 0.3),
@@ -24,6 +25,7 @@ FIXED_NAMES = {
     "Very dark red wood3": ("fixed_dark_trim", [0.18, 0.035, 0.025, 1.0], 0.0, 0.42),
     "White plastic": ("fixed_white_plastic", [0.88, 0.86, 0.82, 1.0], 0.0, 0.48),
     "Inner_body": ("fixed_inner_body", [0.88, 0.86, 0.82, 1.0], 0.0, 0.5),
+    "fixed_inner_body_export": ("fixed_inner_body", [0.88, 0.86, 0.82, 1.0], 0.0, 0.5),
     "Material_001": ("fixed_inner_body", [0.88, 0.86, 0.82, 1.0], 0.0, 0.5),
     "Material_003": ("fixed_inner_body", [0.88, 0.86, 0.82, 1.0], 0.0, 0.5),
     "Stainless steel": ("fixed_metal", [0.58, 0.59, 0.56, 1.0], 0.9, 0.22),
