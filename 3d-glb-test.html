@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Dammer 3D Configurator</title>
     <meta name="description" content="Bekijk en configureer de Dammer in 3D.">
+    <link rel="preload" href="images/dammer-boat-blender-v3-web.glb?v=1" as="fetch" type="model/gltf-binary" crossorigin>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&display=swap" rel="stylesheet">
@@ -1012,7 +1013,7 @@
       downloadButton.addEventListener("click", downloadImage);
 
       new GLTFLoader().load(
-        "images/dammer-boat-blender-v3.glb?v=1",
+        "images/dammer-boat-blender-v3-web.glb?v=1",
         (gltf) => {
           const model = gltf.scene;
           model.traverse((object) => {
