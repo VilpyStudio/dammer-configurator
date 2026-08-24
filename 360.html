@@ -395,17 +395,17 @@
       const FRAME_COUNT = 8;
       const IMAGE_WIDTH = 1280;
       const IMAGE_HEIGHT = 900;
-      const IMAGE_VERSION = "9";
+      const IMAGE_VERSION = "10";
 
       const colors = {
         hull: [
-          { name: "RAL 9010", value: "#f1ede1", render: "#f4f0e6", shade: { shadow: .62, range: .44, lift: .07, specular: .18, alphaBase: 98, alphaScale: 1.85 } },
-          { name: "RAL 1013", value: "#e3d9c6", render: "#e6dcc9", shade: { shadow: .56, range: .48, lift: .06, specular: .17, alphaBase: 92, alphaScale: 1.84 } },
-          { name: "RAL 6034", value: "#7fb5b5", render: "#5e8581", shade: { shadow: .34, range: .48, lift: .00, specular: .22, saturation: .78 } },
-          { name: "RAL 7033", value: "#7d8471", render: "#7b826f", shade: { shadow: .38, range: .62, lift: .02, specular: .16, alphaBase: 82, alphaScale: 1.92 } },
-          { name: "RAL 7034", value: "#928e85", render: "#918c82", shade: { shadow: .40, range: .60, lift: .02, specular: .16, alphaBase: 84, alphaScale: 1.90 } },
-          { name: "RAL 7038", value: "#b5b8b1", render: "#b8bbb4", shade: { shadow: .48, range: .54, lift: .04, specular: .16, alphaBase: 88, alphaScale: 1.88 } },
-          { name: "RAL 7039", value: "#6c6960", render: "#69665e", shade: { shadow: .36, range: .66, lift: .01, specular: .18, alphaBase: 80, alphaScale: 1.90 } },
+          { name: "RAL 9010", value: "#f1ede1", asset: "ral9010" },
+          { name: "RAL 1013", value: "#e3d9c6", asset: "ral1013" },
+          { name: "RAL 6034", value: "#7fb5b5", asset: "ral6034" },
+          { name: "RAL 7033", value: "#7d8471", asset: "ral7033" },
+          { name: "RAL 7034", value: "#928e85", asset: "ral7034" },
+          { name: "RAL 7038", value: "#b5b8b1", asset: "ral7038" },
+          { name: "RAL 7039", value: "#6c6960", asset: "ral7039" },
         ],
         cushions: [
           { name: "Cognac", value: "#b96936", render: "#bd6b37", shade: { shadow: .48, range: .58, lift: .02, specular: .07, alphaBase: 24, alphaScale: 1.36 } },
@@ -448,6 +448,10 @@
         return `images/360-8/${layer}-${frameName(frame)}.png?v=${IMAGE_VERSION}`;
       }
 
+      function hullImagePath(colorKey, frame) {
+        return `images/360-hull/hull-${colorKey}-${frameName(frame)}.png?v=${IMAGE_VERSION}`;
+      }
+
       function loadImage(src) {
         return new Promise((resolve, reject) => {
           const image = new Image();
@@ -458,13 +462,23 @@
       }
 
       async function loadFrames() {
-        const layers = ["base", "hull", "cushions", "teak"];
+        const layers = ["base", "cushions", "teak"];
         let loaded = 0;
-        const total = FRAME_COUNT * layers.length;
+        const total = FRAME_COUNT * (layers.length + colors.hull.length);
         await Promise.all(layers.map(async (layer) => {
           images[layer] = [];
           for (let frame = 0; frame < FRAME_COUNT; frame += 1) {
             images[layer][frame] = await loadImage(imagePath(layer, frame));
+            loaded += 1;
+            loader.textContent = `Dammer renders worden geladen... ${Math.round((loaded / total) * 100)}%`;
+          }
+        }));
+
+        images.hull = {};
+        await Promise.all(colors.hull.map(async (color) => {
+          images.hull[color.asset] = [];
+          for (let frame = 0; frame < FRAME_COUNT; frame += 1) {
+            images.hull[color.asset][frame] = await loadImage(hullImagePath(color.asset, frame));
             loaded += 1;
             loader.textContent = `Dammer renders worden geladen... ${Math.round((loaded / total) * 100)}%`;
           }
@@ -648,9 +662,11 @@
       function draw() {
         if (!images.base) return;
         context.clearRect(0, 0, IMAGE_WIDTH, IMAGE_HEIGHT);
-        context.drawImage(images.base[currentFrame], 0, 0);
+        const hull = selectedColor("hull", state.hull);
+        const hullRender = hull && images.hull && images.hull[hull.asset];
+        context.drawImage(hullRender ? hullRender[currentFrame] : images.base[currentFrame], 0, 0);
         Object.entries(state).forEach(([layer, color]) => {
-          if (color) tintLayer(layer, color);
+          if (layer !== "hull" && color) tintLayer(layer, color);
         });
       }
 
