@@ -1,0 +1,761 @@
+<!doctype html>
+<html lang="nl">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Dammer 3D Configurator</title>
+    <meta name="description" content="Configureer de Dammer met echte Blender-renders.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+      :root {
+        --ink: #172019;
+        --muted: #667069;
+        --line: #dfe3df;
+        --green: #174d2c;
+        --paper: #fff;
+        --font-main: "Archivo", Arial, Helvetica, sans-serif;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        background: #f4f6f3;
+        touch-action: manipulation;
+      }
+
+      body {
+        margin: 0;
+        min-width: 320px;
+        background: #fbfcfa;
+        color: var(--ink);
+        font-family: var(--font-main);
+        -webkit-text-size-adjust: 100%;
+      }
+
+      button {
+        -webkit-tap-highlight-color: transparent;
+        font: inherit;
+      }
+
+      .site-shell {
+        min-height: 100vh;
+      }
+
+      .topbar {
+        align-items: center;
+        background: var(--paper);
+        border-bottom: 1px solid var(--line);
+        display: flex;
+        height: 82px;
+        justify-content: space-between;
+        padding: 0 clamp(24px, 4vw, 72px);
+      }
+
+      .brand img {
+        display: block;
+        height: auto;
+        max-width: min(280px, 48vw);
+        width: 230px;
+      }
+
+      .topbar-actions {
+        align-items: center;
+        display: flex;
+        gap: 22px;
+      }
+
+      .reset-button,
+      .flat-link,
+      .original-link {
+        background: transparent;
+        border: 0;
+        color: #4d5850;
+        cursor: pointer;
+        font-size: 13px;
+        font-weight: 700;
+        text-decoration: underline;
+        text-decoration-color: #aeb5af;
+        text-underline-offset: 5px;
+      }
+
+      .configurator {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(340px, 440px);
+        min-height: calc(100vh - 82px);
+      }
+
+      .viewer {
+        background: radial-gradient(circle at 58% 47%, rgba(255,255,255,.98), rgba(248,249,246,.86) 48%, rgba(241,244,240,.94) 86%), #f3f5f1;
+        display: grid;
+        grid-template-rows: auto minmax(0, 1fr) auto;
+        overflow: hidden;
+        padding: clamp(26px, 3.2vw, 48px) clamp(24px, 4vw, 66px) 18px;
+        position: relative;
+      }
+
+      .viewer-copy {
+        position: relative;
+        z-index: 2;
+      }
+
+      .viewer-copy span {
+        color: var(--green);
+        display: block;
+        font-size: 12px;
+        font-weight: 700;
+        margin-bottom: 14px;
+        text-transform: uppercase;
+      }
+
+      .viewer-copy h1 {
+        font-size: clamp(30px, 3vw, 48px);
+        font-weight: 700;
+        line-height: 1.06;
+        margin: 0;
+        max-width: 680px;
+      }
+
+      .stage {
+        align-items: center;
+        cursor: grab;
+        display: flex;
+        justify-content: center;
+        min-height: 0;
+        position: relative;
+        user-select: none;
+      }
+
+      .stage.dragging {
+        cursor: grabbing;
+      }
+
+      .stage canvas {
+        display: block;
+        filter: drop-shadow(0 28px 34px rgba(30,42,33,.12));
+        height: auto;
+        max-height: min(76vh, 820px);
+        max-width: 100%;
+        width: auto;
+      }
+
+      .loader {
+        color: #717a73;
+        font-size: 13px;
+        left: 50%;
+        position: absolute;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 2;
+      }
+
+      .viewer-note {
+        color: #7a817c;
+        font-size: 10px;
+        margin: 0;
+        position: relative;
+        text-align: center;
+        z-index: 2;
+      }
+
+      .controls {
+        background: var(--paper);
+        border-left: 1px solid var(--line);
+        padding: clamp(34px, 4vw, 64px) clamp(28px, 3.4vw, 52px);
+      }
+
+      .controls-intro {
+        align-items: center;
+        border-bottom: 1px solid var(--line);
+        display: flex;
+        gap: 14px;
+        padding-bottom: 26px;
+      }
+
+      .step {
+        align-items: center;
+        background: var(--green);
+        border-radius: 50%;
+        color: #fff;
+        display: flex;
+        font-size: 11px;
+        font-weight: 700;
+        height: 38px;
+        justify-content: center;
+        width: 38px;
+      }
+
+      .controls-intro p {
+        color: #7b837d;
+        font-size: 10px;
+        font-weight: 700;
+        margin: 0 0 6px;
+        text-transform: uppercase;
+      }
+
+      .controls-intro h2 {
+        font-size: 25px;
+        font-weight: 700;
+        line-height: 1;
+        margin: 0;
+      }
+
+      .control-group {
+        border-bottom: 1px solid var(--line);
+        padding: 27px 0;
+      }
+
+      .control-heading {
+        align-items: baseline;
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 17px;
+      }
+
+      .control-heading h2 {
+        font-size: 14px;
+        font-weight: 700;
+        margin: 0;
+      }
+
+      .control-heading span {
+        color: #788179;
+        font-size: 11px;
+        font-weight: 600;
+      }
+
+      .swatches {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 11px;
+      }
+
+      .swatch {
+        background: var(--swatch, #fff);
+        border: 3px solid #fff;
+        border-radius: 50%;
+        box-shadow: 0 0 0 1px #cdd2ce;
+        cursor: pointer;
+        height: 38px;
+        position: relative;
+        transition: transform .15s ease, box-shadow .15s ease;
+        width: 38px;
+      }
+
+      .swatch:hover {
+        transform: translateY(-2px);
+      }
+
+      .swatch.selected {
+        box-shadow: 0 0 0 2px var(--green), 0 4px 10px rgba(23,77,44,.18);
+      }
+
+      .swatch.selected::after {
+        border: solid #fff;
+        border-width: 0 2px 2px 0;
+        content: "";
+        height: 8px;
+        left: 13px;
+        position: absolute;
+        top: 10px;
+        transform: rotate(45deg);
+        width: 4px;
+      }
+
+      .original-link {
+        font-size: 10px;
+        font-weight: 600;
+        margin-top: 15px;
+        padding: 0;
+      }
+
+      .download-button {
+        align-items: center;
+        background: var(--green);
+        border: 0;
+        color: #fff;
+        cursor: pointer;
+        display: flex;
+        font-size: 13px;
+        font-weight: 700;
+        justify-content: space-between;
+        margin-top: 30px;
+        padding: 17px 19px;
+        transition: background .18s ease, transform .18s ease;
+        width: 100%;
+      }
+
+      .download-button:hover:not(:disabled) {
+        background: #0e3d20;
+        transform: translateY(-1px);
+      }
+
+      .download-button:disabled {
+        cursor: wait;
+        opacity: .55;
+      }
+
+      .save-note {
+        color: #858c87;
+        font-size: 10px;
+        margin: 10px 0 0;
+        text-align: center;
+      }
+
+      @media (max-width: 1000px) {
+        .configurator {
+          grid-template-columns: 1fr;
+        }
+
+        .viewer {
+          min-height: 660px;
+        }
+
+        .controls {
+          border-left: 0;
+          border-top: 1px solid var(--line);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="site-shell">
+      <header class="topbar">
+        <a class="brand" href="index.html" aria-label="Dammer configurator">
+          <img src="images/dammer-logo.svg" alt="Dammer 700">
+        </a>
+        <div class="topbar-actions">
+          <a class="flat-link" href="index.html">2D versie</a>
+          <button class="reset-button" type="button" data-reset>Opnieuw instellen</button>
+        </div>
+      </header>
+
+      <div class="configurator">
+        <section class="viewer" aria-label="Sleepbare renderconfigurator van de Dammer">
+          <div class="viewer-copy">
+            <span>Stel jouw uitvoering samen</span>
+            <h1>Maak de Dammer van jou.</h1>
+          </div>
+          <div class="stage" data-stage>
+            <div class="loader" data-loader>Dammer renders worden geladen...</div>
+            <canvas width="1280" height="900" aria-label="Sleepbare Dammer met gekozen kleuren"></canvas>
+          </div>
+          <p class="viewer-note">Kleuren op het scherm kunnen afwijken van de werkelijke materialen.</p>
+        </section>
+
+        <aside class="controls">
+          <div class="controls-intro">
+            <span class="step">01</span>
+            <div>
+              <p>Exterieur &amp; interieur</p>
+              <h2>Kies je kleuren</h2>
+            </div>
+          </div>
+
+          <section class="control-group" data-panel="hull">
+            <div class="control-heading">
+              <h2>Romp</h2>
+              <span data-chosen>Origineel</span>
+            </div>
+            <div class="swatches"></div>
+            <button class="original-link" type="button">Gebruik originele kleur</button>
+          </section>
+
+          <section class="control-group" data-panel="cushions">
+            <div class="control-heading">
+              <h2>Kussens</h2>
+              <span data-chosen>Origineel</span>
+            </div>
+            <div class="swatches"></div>
+            <button class="original-link" type="button">Gebruik originele kleur</button>
+          </section>
+
+          <section class="control-group" data-panel="teak">
+            <div class="control-heading">
+              <h2>Teakdeck</h2>
+              <span data-chosen>Origineel</span>
+            </div>
+            <div class="swatches"></div>
+            <button class="original-link" type="button">Gebruik originele kleur</button>
+          </section>
+
+          <button class="download-button" type="button" data-download disabled>
+            <span>Download jouw ontwerp</span>
+            <span aria-hidden="true">&#8595;</span>
+          </button>
+          <p class="save-note">Je ontwerp wordt als PNG opgeslagen.</p>
+        </aside>
+      </div>
+    </main>
+
+    <script>
+      const FRAME_COUNT = 8;
+      const IMAGE_WIDTH = 1280;
+      const IMAGE_HEIGHT = 900;
+      const IMAGE_VERSION = "8";
+
+      const colors = {
+        hull: [
+          { name: "RAL 9010", value: "#f1ede1", render: "#f4f0e6", shade: { shadow: .62, range: .44, lift: .07, specular: .18, alphaBase: 98, alphaScale: 1.85 } },
+          { name: "RAL 1013", value: "#e3d9c6", render: "#e6dcc9", shade: { shadow: .56, range: .48, lift: .06, specular: .17, alphaBase: 92, alphaScale: 1.84 } },
+          { name: "RAL 6034", value: "#7fb5b5", render: "#83b8b8", shade: { shadow: .50, range: .46, lift: .015, specular: .12 } },
+          { name: "RAL 7033", value: "#7d8471", render: "#7b826f", shade: { shadow: .38, range: .62, lift: .02, specular: .16, alphaBase: 82, alphaScale: 1.92 } },
+          { name: "RAL 7034", value: "#928e85", render: "#918c82", shade: { shadow: .40, range: .60, lift: .02, specular: .16, alphaBase: 84, alphaScale: 1.90 } },
+          { name: "RAL 7038", value: "#b5b8b1", render: "#b8bbb4", shade: { shadow: .48, range: .54, lift: .04, specular: .16, alphaBase: 88, alphaScale: 1.88 } },
+          { name: "RAL 7039", value: "#6c6960", render: "#69665e", shade: { shadow: .36, range: .66, lift: .01, specular: .18, alphaBase: 80, alphaScale: 1.90 } },
+        ],
+        cushions: [
+          { name: "Cognac", value: "#b96936", render: "#bd6b37", shade: { shadow: .48, range: .58, lift: .02, specular: .07, alphaBase: 24, alphaScale: 1.36 } },
+          { name: "Creme", value: "#d8ccb4", render: "#d8cbb2", shade: { shadow: .60, range: .42, lift: .06, specular: .05, alphaBase: 18, alphaScale: 1.22 } },
+          { name: "Taupe", value: "#877768", render: "#87786a", shade: { shadow: .50, range: .52, lift: .03, specular: .05, alphaBase: 20, alphaScale: 1.28 } },
+          { name: "Donkerbruin", value: "#49362d", render: "#4e382f", shade: { shadow: .48, range: .62, lift: .00, specular: .05, alphaBase: 24, alphaScale: 1.36 } },
+          { name: "Marine", value: "#293f55", render: "#2c4359", shade: { shadow: .48, range: .60, lift: .00, specular: .05, alphaBase: 24, alphaScale: 1.36 } },
+          { name: "Lichtgrijs", value: "#b7b8b5", render: "#b7b8b4", shade: { shadow: .58, range: .44, lift: .05, specular: .04, alphaBase: 18, alphaScale: 1.22 } },
+        ],
+        teak: [
+          { name: "Naturel teak", value: "#c98f4d", render: "#c58b4a", shade: { shadow: .46, range: .62, lift: .02, specular: .08, alphaBase: 12, alphaScale: 1.18 } },
+          { name: "Honing teak", value: "#d6a864", render: "#d1a05e", shade: { shadow: .48, range: .58, lift: .03, specular: .08, alphaBase: 12, alphaScale: 1.16 } },
+          { name: "Licht eiken", value: "#d4bd91", render: "#d3bd91", shade: { shadow: .55, range: .48, lift: .04, specular: .07, alphaBase: 10, alphaScale: 1.12 } },
+          { name: "Vergrijsd teak", value: "#928b7b", render: "#928b7d", shade: { shadow: .50, range: .52, lift: .02, specular: .06, alphaBase: 10, alphaScale: 1.14 } },
+        ],
+      };
+
+      const state = { hull: null, cushions: null, teak: null };
+      const canvas = document.querySelector("canvas");
+      const context = canvas.getContext("2d", { willReadFrequently: true });
+      const layerCanvas = document.createElement("canvas");
+      layerCanvas.width = IMAGE_WIDTH;
+      layerCanvas.height = IMAGE_HEIGHT;
+      const layerContext = layerCanvas.getContext("2d", { willReadFrequently: true });
+      const stage = document.querySelector("[data-stage]");
+      const loader = document.querySelector("[data-loader]");
+      const downloadButton = document.querySelector("[data-download]");
+      const resetButton = document.querySelector("[data-reset]");
+      const images = {};
+      let currentFrame = 0;
+      let dragStartX = 0;
+      let dragStartFrame = 0;
+      let dragging = false;
+
+      function frameName(frame) {
+        return String(frame).padStart(2, "0");
+      }
+
+      function imagePath(layer, frame) {
+        return `images/360-8/${layer}-${frameName(frame)}.png?v=${IMAGE_VERSION}`;
+      }
+
+      function loadImage(src) {
+        return new Promise((resolve, reject) => {
+          const image = new Image();
+          image.onload = () => resolve(image);
+          image.onerror = reject;
+          image.src = src;
+        });
+      }
+
+      async function loadFrames() {
+        const layers = ["base", "hull", "cushions", "teak"];
+        let loaded = 0;
+        const total = FRAME_COUNT * layers.length;
+        await Promise.all(layers.map(async (layer) => {
+          images[layer] = [];
+          for (let frame = 0; frame < FRAME_COUNT; frame += 1) {
+            images[layer][frame] = await loadImage(imagePath(layer, frame));
+            loaded += 1;
+            loader.textContent = `Dammer renders worden geladen... ${Math.round((loaded / total) * 100)}%`;
+          }
+        }));
+      }
+
+      function hexToRgb(hex) {
+        const clean = hex.replace("#", "");
+        return {
+          r: parseInt(clean.slice(0, 2), 16),
+          g: parseInt(clean.slice(2, 4), 16),
+          b: parseInt(clean.slice(4, 6), 16),
+        };
+      }
+
+      function rgbToHsl(r, g, b) {
+        r /= 255;
+        g /= 255;
+        b /= 255;
+        const max = Math.max(r, g, b);
+        const min = Math.min(r, g, b);
+        let h = 0;
+        let s = 0;
+        const l = (max + min) / 2;
+        if (max !== min) {
+          const d = max - min;
+          s = l > .5 ? d / (2 - max - min) : d / (max + min);
+          if (max === r) h = (g - b) / d + (g < b ? 6 : 0);
+          else if (max === g) h = (b - r) / d + 2;
+          else h = (r - g) / d + 4;
+          h /= 6;
+        }
+        return { h, s, l };
+      }
+
+      function hslToRgb(h, s, l) {
+        if (s === 0) {
+          const value = Math.round(l * 255);
+          return { r: value, g: value, b: value };
+        }
+        const hue2rgb = (p, q, t) => {
+          if (t < 0) t += 1;
+          if (t > 1) t -= 1;
+          if (t < 1 / 6) return p + (q - p) * 6 * t;
+          if (t < 1 / 2) return q;
+          if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
+          return p;
+        };
+        const q = l < .5 ? l * (1 + s) : l + s - l * s;
+        const p = 2 * l - q;
+        return {
+          r: Math.round(hue2rgb(p, q, h + 1 / 3) * 255),
+          g: Math.round(hue2rgb(p, q, h) * 255),
+          b: Math.round(hue2rgb(p, q, h - 1 / 3) * 255),
+        };
+      }
+
+      function clamp(value, min, max) {
+        return Math.max(min, Math.min(max, value));
+      }
+
+      function layerToneRange(pixels) {
+        const histogram = new Array(256).fill(0);
+        let total = 0;
+
+        for (let index = 0; index < pixels.length; index += 4) {
+          if (pixels[index + 3] < 8) continue;
+          const luma = Math.round(
+            pixels[index] * .2126 +
+            pixels[index + 1] * .7152 +
+            pixels[index + 2] * .0722
+          );
+          histogram[luma] += 1;
+          total += 1;
+        }
+
+        if (!total) return { low: 0, high: 255 };
+
+        let seen = 0;
+        let low = 0;
+        let high = 255;
+        const lowTarget = total * .03;
+        const highTarget = total * .985;
+
+        for (let value = 0; value < histogram.length; value += 1) {
+          seen += histogram[value];
+          if (seen >= lowTarget) {
+            low = value;
+            break;
+          }
+        }
+
+        seen = 0;
+        for (let value = 0; value < histogram.length; value += 1) {
+          seen += histogram[value];
+          if (seen >= highTarget) {
+            high = value;
+            break;
+          }
+        }
+
+        return { low, high: Math.max(high, low + 24) };
+      }
+
+      function shadeColor(targetRgb, shade, layer) {
+        const targetBrightness = (
+          targetRgb.r * .2126 +
+          targetRgb.g * .7152 +
+          targetRgb.b * .0722
+        ) / 255;
+        const lightColorBoost = clamp((targetBrightness - .66) / .34, 0, 1);
+        const profile = currentShade || {
+          hull: { shadow: .38, range: .64, lift: .03, specular: .17 },
+          cushions: { shadow: .48, range: .58, lift: .07, specular: .12 },
+          teak: { shadow: .44, range: .72, lift: .04, specular: .16 },
+        }[layer] || { shadow: .38, range: .72, lift: .06, specular: .16 };
+
+        const shadow = profile.shadow + (layer === "hull" ? lightColorBoost * .22 : 0);
+        const range = profile.range - (layer === "hull" ? lightColorBoost * .12 : 0);
+        const lift = profile.lift + (layer === "hull" ? lightColorBoost * .12 : 0);
+        const brightness = shadow + Math.pow(shade, .82) * range;
+        const highlight = Math.pow(clamp((shade - .76) / .24, 0, 1), 2) * profile.specular;
+        return {
+          r: Math.round(clamp(targetRgb.r * brightness + 255 * highlight + 255 * lift * (1 - shade), 0, 255)),
+          g: Math.round(clamp(targetRgb.g * brightness + 255 * highlight + 255 * lift * (1 - shade), 0, 255)),
+          b: Math.round(clamp(targetRgb.b * brightness + 255 * highlight + 255 * lift * (1 - shade), 0, 255)),
+        };
+      }
+
+      function selectedColor(role, color) {
+        return colors[role].find((item) => item.value === color) || null;
+      }
+
+      let currentShade = null;
+
+      function tintLayer(layer, color) {
+        layerContext.clearRect(0, 0, IMAGE_WIDTH, IMAGE_HEIGHT);
+        layerContext.drawImage(images[layer][currentFrame], 0, 0);
+        const colorSpec = selectedColor(layer, color);
+        currentShade = colorSpec && colorSpec.shade ? colorSpec.shade : null;
+        const targetRgb = hexToRgb((colorSpec && colorSpec.render) || color);
+        const data = layerContext.getImageData(0, 0, IMAGE_WIDTH, IMAGE_HEIGHT);
+        const pixels = data.data;
+        const toneRange = layerToneRange(pixels);
+
+        for (let index = 0; index < pixels.length; index += 4) {
+          if (pixels[index + 3] < 8) continue;
+          const luma = (
+            pixels[index] * .2126 +
+            pixels[index + 1] * .7152 +
+            pixels[index + 2] * .0722
+          );
+          const shade = clamp((luma - toneRange.low) / (toneRange.high - toneRange.low), 0, 1);
+          const shaded = shadeColor(targetRgb, shade, layer);
+          pixels[index] = shaded.r;
+          pixels[index + 1] = shaded.g;
+          pixels[index + 2] = shaded.b;
+          if (layer === "hull") {
+            pixels[index + 3] = pixels[index + 3] > 22 ? 255 : Math.round(clamp(pixels[index + 3] * 5, 0, 255));
+          } else if (currentShade && typeof currentShade.alphaScale === "number") {
+            pixels[index + 3] = Math.round(clamp((currentShade.alphaBase || 0) + pixels[index + 3] * currentShade.alphaScale, 0, 255));
+          }
+        }
+
+        layerContext.putImageData(data, 0, 0);
+        context.drawImage(layerCanvas, 0, 0);
+        currentShade = null;
+      }
+
+      function draw() {
+        if (!images.base) return;
+        context.clearRect(0, 0, IMAGE_WIDTH, IMAGE_HEIGHT);
+        context.drawImage(images.base[currentFrame], 0, 0);
+        Object.entries(state).forEach(([layer, color]) => {
+          if (color) tintLayer(layer, color);
+        });
+      }
+
+      function setFrame(frame) {
+        currentFrame = ((frame % FRAME_COUNT) + FRAME_COUNT) % FRAME_COUNT;
+        draw();
+      }
+
+      function renderPanels() {
+        document.querySelectorAll("[data-panel]").forEach((panel) => {
+          const role = panel.dataset.panel;
+          const swatches = panel.querySelector(".swatches");
+          const chosen = panel.querySelector("[data-chosen]");
+          const original = panel.querySelector(".original-link");
+          swatches.innerHTML = "";
+
+          colors[role].forEach((color) => {
+            const button = document.createElement("button");
+            button.className = "swatch";
+            button.type = "button";
+            button.style.setProperty("--swatch", color.value);
+            button.setAttribute("aria-label", color.name);
+            button.title = color.name;
+            button.addEventListener("click", () => {
+              state[role] = color.value;
+              renderPanels();
+              draw();
+            });
+            if (state[role] === color.value) button.classList.add("selected");
+            swatches.appendChild(button);
+          });
+
+          original.onclick = () => {
+            state[role] = null;
+            renderPanels();
+            draw();
+          };
+
+          const selected = colors[role].find((item) => item.value === state[role]);
+          chosen.textContent = selected ? selected.name : "Origineel";
+        });
+      }
+
+      function startDrag(event) {
+        dragging = true;
+        stage.classList.add("dragging");
+        dragStartX = event.clientX;
+        dragStartFrame = currentFrame;
+        stage.setPointerCapture(event.pointerId);
+      }
+
+      function moveDrag(event) {
+        if (!dragging) return;
+        const frameDelta = Math.round((event.clientX - dragStartX) / 42);
+        setFrame(dragStartFrame - frameDelta);
+      }
+
+      function endDrag(event) {
+        dragging = false;
+        stage.classList.remove("dragging");
+        if (stage.hasPointerCapture(event.pointerId)) stage.releasePointerCapture(event.pointerId);
+      }
+
+      function reset() {
+        state.hull = null;
+        state.cushions = null;
+        state.teak = null;
+        setFrame(0);
+        renderPanels();
+        draw();
+      }
+
+      function downloadImage() {
+        draw();
+        const link = document.createElement("a");
+        link.download = "mijn-dammer-360-configuratie.png";
+        link.href = canvas.toDataURL("image/png");
+        link.click();
+      }
+
+      function normalizeParam(value) {
+        return value ? value.trim().toLowerCase().replace(/\s+/g, "") : "";
+      }
+
+      function applyUrlState() {
+        const params = new URLSearchParams(window.location.search);
+        ["hull", "cushions", "teak"].forEach((role) => {
+          const wanted = normalizeParam(params.get(role));
+          if (!wanted) return;
+          const match = colors[role].find((item) => (
+            normalizeParam(item.name) === wanted ||
+            normalizeParam(item.value) === wanted
+          ));
+          if (match) state[role] = match.value;
+        });
+
+        const frame = Number.parseInt(params.get("frame"), 10);
+        if (Number.isFinite(frame)) currentFrame = ((frame % FRAME_COUNT) + FRAME_COUNT) % FRAME_COUNT;
+      }
+
+      stage.addEventListener("pointerdown", startDrag);
+      stage.addEventListener("pointermove", moveDrag);
+      stage.addEventListener("pointerup", endDrag);
+      stage.addEventListener("pointercancel", endDrag);
+      resetButton.addEventListener("click", reset);
+      downloadButton.addEventListener("click", downloadImage);
+      applyUrlState();
+      renderPanels();
+
+      loadFrames().then(() => {
+        loader.remove();
+        downloadButton.disabled = false;
+        draw();
+      }).catch(() => {
+        loader.textContent = "Renders konden niet worden geladen.";
+      });
+    </script>
+  </body>
+</html>

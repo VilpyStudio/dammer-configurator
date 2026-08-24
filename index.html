@@ -72,7 +72,8 @@
       }
 
       .reset-button,
-      .original-link {
+      .original-link,
+      .view-3d-link {
         background: transparent;
         border: 0;
         color: #4d5850;
@@ -85,6 +86,17 @@
       .reset-button {
         font-size: 13px;
         font-weight: 600;
+      }
+
+      .topbar-actions {
+        align-items: center;
+        display: flex;
+        gap: 22px;
+      }
+
+      .view-3d-link {
+        font-size: 13px;
+        font-weight: 700;
       }
 
       .configurator {
@@ -357,6 +369,14 @@
           font-size: 11px;
         }
 
+        .topbar-actions {
+          gap: 14px;
+        }
+
+        .view-3d-link {
+          font-size: 11px;
+        }
+
         .configurator {
           min-height: calc(100vh - 70px);
         }
@@ -399,7 +419,10 @@
         <div class="brand" aria-label="Dammer configurator">
           <img src="images/dammer-logo.svg" alt="Dammer 700">
         </div>
-        <button class="reset-button" type="button" data-reset>Opnieuw instellen</button>
+        <div class="topbar-actions">
+          <a class="view-3d-link" href="360.html">3D versie</a>
+          <button class="reset-button" type="button" data-reset>Opnieuw instellen</button>
+        </div>
       </header>
 
       <div class="configurator">

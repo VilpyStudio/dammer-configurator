@@ -2,3 +2,8 @@
 blender-inspection.json
 inspect_boat_blend.py
 render_boat_layers.py
+export_dammer_glb.py
+inspect_material_nodes.py
+material-node-inspection.json
+render_360_layers.py
+images/360/
