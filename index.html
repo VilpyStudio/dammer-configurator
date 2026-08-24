@@ -3,8 +3,8 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Dammer Kleurenconfigurator</title>
-    <meta name="description" content="Stel de romp-, kussen- en teakdeckkleur van jouw Dammer samen.">
+    <title>Dammer 3D Configurator</title>
+    <meta name="description" content="Configureer de Dammer met echte Blender-renders.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&display=swap" rel="stylesheet">
@@ -36,13 +36,9 @@
         -webkit-text-size-adjust: 100%;
       }
 
-      button,
-      input {
-        font: inherit;
-      }
-
       button {
         -webkit-tap-highlight-color: transparent;
+        font: inherit;
       }
 
       .site-shell {
@@ -59,33 +55,11 @@
         padding: 0 clamp(24px, 4vw, 72px);
       }
 
-      .brand {
-        align-items: center;
-        display: flex;
-      }
-
       .brand img {
         display: block;
         height: auto;
         max-width: min(280px, 48vw);
         width: 230px;
-      }
-
-      .reset-button,
-      .original-link,
-      .view-3d-link {
-        background: transparent;
-        border: 0;
-        color: #4d5850;
-        cursor: pointer;
-        text-decoration: underline;
-        text-decoration-color: #aeb5af;
-        text-underline-offset: 5px;
-      }
-
-      .reset-button {
-        font-size: 13px;
-        font-weight: 600;
       }
 
       .topbar-actions {
@@ -94,9 +68,18 @@
         gap: 22px;
       }
 
-      .view-3d-link {
+      .reset-button,
+      .flat-link,
+      .original-link {
+        background: transparent;
+        border: 0;
+        color: #4d5850;
+        cursor: pointer;
         font-size: 13px;
         font-weight: 700;
+        text-decoration: underline;
+        text-decoration-color: #aeb5af;
+        text-underline-offset: 5px;
       }
 
       .configurator {
@@ -106,7 +89,7 @@
       }
 
       .viewer {
-        background: radial-gradient(circle at 55% 47%, rgba(255,255,255,.98), rgba(248,249,246,.86) 48%, rgba(241,244,240,.94) 86%), #f3f5f1;
+        background: radial-gradient(circle at 58% 47%, rgba(255,255,255,.98), rgba(248,249,246,.86) 48%, rgba(241,244,240,.94) 86%), #f3f5f1;
         display: grid;
         grid-template-rows: auto minmax(0, 1fr) auto;
         overflow: hidden;
@@ -124,46 +107,38 @@
         display: block;
         font-size: 12px;
         font-weight: 700;
-        letter-spacing: 0;
         margin-bottom: 14px;
         text-transform: uppercase;
       }
 
       .viewer-copy h1 {
-        font-family: var(--font-main);
         font-size: clamp(30px, 3vw, 48px);
         font-weight: 700;
-        letter-spacing: 0;
         line-height: 1.06;
         margin: 0;
         max-width: 680px;
       }
 
-      .canvas-frame {
+      .stage {
         align-items: center;
+        cursor: grab;
         display: flex;
         justify-content: center;
-        margin: -18px -20px -6px;
         min-height: 0;
-        opacity: 0;
         position: relative;
-        transition: opacity .35s ease;
-        z-index: 1;
+        user-select: none;
       }
 
-      .canvas-frame.ready,
-      .canvas-frame.loading {
-        opacity: 1;
+      .stage.dragging {
+        cursor: grabbing;
       }
 
-      .canvas-frame canvas {
+      .stage canvas {
         display: block;
         filter: drop-shadow(0 28px 34px rgba(30,42,33,.12));
         height: auto;
-        image-rendering: auto;
         max-height: min(76vh, 820px);
         max-width: 100%;
-        object-fit: contain;
         width: auto;
       }
 
@@ -174,6 +149,7 @@
         position: absolute;
         top: 50%;
         transform: translate(-50%, -50%);
+        z-index: 2;
       }
 
       .viewer-note {
@@ -216,16 +192,13 @@
         color: #7b837d;
         font-size: 10px;
         font-weight: 700;
-        letter-spacing: 0;
         margin: 0 0 6px;
         text-transform: uppercase;
       }
 
       .controls-intro h2 {
-        font-family: var(--font-main);
         font-size: 25px;
         font-weight: 700;
-        letter-spacing: 0;
         line-height: 1;
         margin: 0;
       }
@@ -341,74 +314,9 @@
           min-height: 660px;
         }
 
-        .canvas-frame {
-          margin: -8px -12px -4px;
-        }
-
-        .canvas-frame canvas {
-          max-height: 560px;
-        }
-
         .controls {
           border-left: 0;
           border-top: 1px solid var(--line);
-        }
-      }
-
-      @media (max-width: 540px) {
-        .topbar {
-          height: 70px;
-          padding: 0 18px;
-        }
-
-        .brand img {
-          max-width: 185px;
-        }
-
-        .reset-button {
-          font-size: 11px;
-        }
-
-        .topbar-actions {
-          gap: 14px;
-        }
-
-        .view-3d-link {
-          font-size: 11px;
-        }
-
-        .configurator {
-          min-height: calc(100vh - 70px);
-        }
-
-        .viewer {
-          min-height: 520px;
-          padding: 28px 18px 18px;
-        }
-
-        .viewer-copy h1 {
-          font-size: 31px;
-        }
-
-        .canvas-frame {
-          margin: 8px -28px 0;
-        }
-
-        .canvas-frame canvas {
-          max-height: 360px;
-        }
-
-        .controls {
-          padding: 34px 22px 42px;
-        }
-      }
-
-      @media (prefers-reduced-motion: reduce) {
-        *,
-        *::before,
-        *::after {
-          scroll-behavior: auto !important;
-          transition: none !important;
         }
       }
     </style>
@@ -416,24 +324,23 @@
   <body>
     <main class="site-shell">
       <header class="topbar">
-        <div class="brand" aria-label="Dammer configurator">
+        <a class="brand" href="index.html" aria-label="Dammer configurator">
           <img src="images/dammer-logo.svg" alt="Dammer 700">
-        </div>
+        </a>
         <div class="topbar-actions">
-          <a class="view-3d-link" href="360.html">3D versie</a>
           <button class="reset-button" type="button" data-reset>Opnieuw instellen</button>
         </div>
       </header>
 
       <div class="configurator">
-        <section class="viewer" aria-label="Voorbeeld van de samengestelde Dammer">
+        <section class="viewer" aria-label="Sleepbare renderconfigurator van de Dammer">
           <div class="viewer-copy">
             <span>Stel jouw uitvoering samen</span>
             <h1>Maak de Dammer van jou.</h1>
           </div>
-          <div class="canvas-frame loading" data-frame>
-            <div class="loader" data-loader>Dammer wordt geladen...</div>
-            <canvas width="1632" height="1148" aria-label="Dammer met gekozen romp-, kussen- en teakdeckkleur"></canvas>
+          <div class="stage" data-stage>
+            <div class="loader" data-loader>Dammer renders worden geladen...</div>
+            <canvas width="1280" height="900" aria-label="Sleepbare Dammer met gekozen kleuren"></canvas>
           </div>
           <p class="viewer-note">Kleuren op het scherm kunnen afwijken van de werkelijke materialen.</p>
         </section>
@@ -447,27 +354,27 @@
             </div>
           </div>
 
-          <section class="control-group" aria-labelledby="romp-title" data-panel="hull">
+          <section class="control-group" data-panel="hull">
             <div class="control-heading">
-              <h2 id="romp-title">Romp</h2>
+              <h2>Romp</h2>
               <span data-chosen>Origineel</span>
             </div>
             <div class="swatches"></div>
             <button class="original-link" type="button">Gebruik originele kleur</button>
           </section>
 
-          <section class="control-group" aria-labelledby="kussens-title" data-panel="cushions">
+          <section class="control-group" data-panel="cushions">
             <div class="control-heading">
-              <h2 id="kussens-title">Kussens</h2>
+              <h2>Kussens</h2>
               <span data-chosen>Origineel</span>
             </div>
             <div class="swatches"></div>
             <button class="original-link" type="button">Gebruik originele kleur</button>
           </section>
 
-          <section class="control-group" aria-labelledby="teak-title" data-panel="teak">
+          <section class="control-group" data-panel="teak">
             <div class="control-heading">
-              <h2 id="teak-title">Teakdeck</h2>
+              <h2>Teakdeck</h2>
               <span data-chosen>Origineel</span>
             </div>
             <div class="swatches"></div>
@@ -478,54 +385,114 @@
             <span>Download jouw ontwerp</span>
             <span aria-hidden="true">&#8595;</span>
           </button>
-          <p class="save-note">Je ontwerp wordt als scherpe PNG opgeslagen.</p>
+          <p class="save-note">Je ontwerp wordt als PNG opgeslagen.</p>
         </aside>
       </div>
     </main>
 
     <script>
-      const IMAGE_WIDTH = 1632;
-      const IMAGE_HEIGHT = 1148;
+      const FRAME_COUNT = 8;
+      const IMAGE_WIDTH = 1280;
+      const IMAGE_HEIGHT = 900;
+      const IMAGE_VERSION = "12";
 
       const colors = {
         hull: [
-          { name: "RAL 9010", value: "#f1ede1" },
-          { name: "RAL 1013", value: "#e3d9c6" },
-          { name: "RAL 6034", value: "#7fb5b5" },
-          { name: "RAL 7033", value: "#7d8471" },
-          { name: "RAL 7034", value: "#928e85" },
-          { name: "RAL 7038", value: "#b5b8b1" },
-          { name: "RAL 7039", value: "#6c6960" },
+          { name: "RAL 9010", value: "#f1ede1", asset: "ral9010" },
+          { name: "RAL 1013", value: "#e3d9c6", asset: "ral1013" },
+          { name: "RAL 6034", value: "#7fb5b5", asset: "ral6034" },
+          { name: "RAL 7033", value: "#7d8471", asset: "ral7033" },
+          { name: "RAL 7034", value: "#928e85", asset: "ral7034" },
+          { name: "RAL 7038", value: "#b5b8b1", asset: "ral7038" },
+          { name: "RAL 7039", value: "#6c6960", asset: "ral7039" },
         ],
         cushions: [
-          { name: "Cognac", value: "#b96936" },
-          { name: "Creme", value: "#d8ccb4" },
-          { name: "Taupe", value: "#877768" },
-          { name: "Donkerbruin", value: "#49362d" },
-          { name: "Marine", value: "#293f55" },
-          { name: "Lichtgrijs", value: "#b7b8b5" },
+          { name: "Cognac", value: "#b96936", render: "#bd6b37", shade: { shadow: .48, range: .58, lift: .02, specular: .07, alphaBase: 24, alphaScale: 1.36 } },
+          { name: "Creme", value: "#d8ccb4", render: "#d8cbb2", shade: { shadow: .60, range: .42, lift: .06, specular: .05, alphaBase: 18, alphaScale: 1.22 } },
+          { name: "Taupe", value: "#877768", render: "#87786a", shade: { shadow: .50, range: .52, lift: .03, specular: .05, alphaBase: 20, alphaScale: 1.28 } },
+          { name: "Donkerbruin", value: "#49362d", render: "#4e382f", shade: { shadow: .48, range: .62, lift: .00, specular: .05, alphaBase: 24, alphaScale: 1.36 } },
+          { name: "Marine", value: "#293f55", render: "#2c4359", shade: { shadow: .48, range: .60, lift: .00, specular: .05, alphaBase: 24, alphaScale: 1.36 } },
+          { name: "Lichtgrijs", value: "#b7b8b5", render: "#b7b8b4", shade: { shadow: .58, range: .44, lift: .05, specular: .04, alphaBase: 18, alphaScale: 1.22 } },
         ],
         teak: [
-          { name: "Naturel teak", value: "#c98f4d" },
-          { name: "Honing teak", value: "#d6a864" },
-          { name: "Licht eiken", value: "#d4bd91" },
-          { name: "Vergrijsd teak", value: "#928b7b" },
+          { name: "Naturel teak", value: "#c98f4d", render: "#c58b4a", shade: { shadow: .46, range: .62, lift: .02, specular: .08, alphaBase: 12, alphaScale: 1.18 } },
+          { name: "Honing teak", value: "#d6a864", render: "#d1a05e", shade: { shadow: .48, range: .58, lift: .03, specular: .08, alphaBase: 12, alphaScale: 1.16 } },
+          { name: "Licht eiken", value: "#d4bd91", render: "#d3bd91", shade: { shadow: .55, range: .48, lift: .04, specular: .07, alphaBase: 10, alphaScale: 1.12 } },
+          { name: "Vergrijsd teak", value: "#928b7b", render: "#928b7d", shade: { shadow: .50, range: .52, lift: .02, specular: .06, alphaBase: 10, alphaScale: 1.14 } },
         ],
       };
 
       const state = { hull: null, cushions: null, teak: null };
-      const sources = {
-        base: "images/boat3-render.png?v=4",
-        hull: "images/boat3-hull-layer.png?v=4",
-        cushions: "images/boat3-cushions-layer.png?v=4",
-        teak: "images/boat3-teakdeck-layer.png?v=4",
-      };
-      const images = {};
       const canvas = document.querySelector("canvas");
-      const frame = document.querySelector("[data-frame]");
+      const context = canvas.getContext("2d", { willReadFrequently: true });
+      const layerCanvas = document.createElement("canvas");
+      layerCanvas.width = IMAGE_WIDTH;
+      layerCanvas.height = IMAGE_HEIGHT;
+      const layerContext = layerCanvas.getContext("2d", { willReadFrequently: true });
+      const stage = document.querySelector("[data-stage]");
       const loader = document.querySelector("[data-loader]");
       const downloadButton = document.querySelector("[data-download]");
-      const context = canvas.getContext("2d", { willReadFrequently: true });
+      const resetButton = document.querySelector("[data-reset]");
+      const images = {};
+      const frameCache = new Map();
+      const PIXELS_PER_FRAME = 48;
+      const INERTIA_FRICTION = .90;
+      const MIN_VELOCITY = .002;
+      let currentFrame = 0;
+      let framePosition = 0;
+      let renderedFrame = -1;
+      let dragStartX = 0;
+      let dragStartFrame = 0;
+      let dragging = false;
+      let lastDragX = 0;
+      let lastDragTime = 0;
+      let frameVelocity = 0;
+      let inertiaFrame = 0;
+
+      function frameName(frame) {
+        return String(frame).padStart(2, "0");
+      }
+
+      function imagePath(layer, frame) {
+        return `images/360-8/${layer}-${frameName(frame)}.png?v=${IMAGE_VERSION}`;
+      }
+
+      function hullImagePath(colorKey, frame) {
+        return `images/360-hull/hull-${colorKey}-${frameName(frame)}.png?v=${IMAGE_VERSION}`;
+      }
+
+      function loadImage(src) {
+        return new Promise((resolve, reject) => {
+          const image = new Image();
+          image.onload = () => resolve(image);
+          image.onerror = reject;
+          image.src = src;
+        });
+      }
+
+      async function loadFrames() {
+        const layers = ["base", "cushions", "teak"];
+        let loaded = 0;
+        const total = FRAME_COUNT * (layers.length + colors.hull.length);
+        await Promise.all(layers.map(async (layer) => {
+          images[layer] = [];
+          for (let frame = 0; frame < FRAME_COUNT; frame += 1) {
+            images[layer][frame] = await loadImage(imagePath(layer, frame));
+            loaded += 1;
+            loader.textContent = `Dammer renders worden geladen... ${Math.round((loaded / total) * 100)}%`;
+          }
+        }));
+
+        images.hull = {};
+        await Promise.all(colors.hull.map(async (color) => {
+          images.hull[color.asset] = [];
+          for (let frame = 0; frame < FRAME_COUNT; frame += 1) {
+            images.hull[color.asset][frame] = await loadImage(hullImagePath(color.asset, frame));
+            loaded += 1;
+            loader.textContent = `Dammer renders worden geladen... ${Math.round((loaded / total) * 100)}%`;
+          }
+        }));
+      }
 
       function hexToRgb(hex) {
         const clean = hex.replace("#", "");
@@ -545,15 +512,14 @@
         let h = 0;
         let s = 0;
         const l = (max + min) / 2;
-        const d = max - min;
-
-        if (d !== 0) {
-          s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-          if (max === r) h = ((g - b) / d + (g < b ? 6 : 0)) / 6;
-          else if (max === g) h = ((b - r) / d + 2) / 6;
-          else h = ((r - g) / d + 4) / 6;
+        if (max !== min) {
+          const d = max - min;
+          s = l > .5 ? d / (2 - max - min) : d / (max + min);
+          if (max === r) h = (g - b) / d + (g < b ? 6 : 0);
+          else if (max === g) h = (b - r) / d + 2;
+          else h = (r - g) / d + 4;
+          h /= 6;
         }
-
         return { h, s, l };
       }
 
@@ -562,7 +528,6 @@
           const value = Math.round(l * 255);
           return { r: value, g: value, b: value };
         }
-
         const hue2rgb = (p, q, t) => {
           if (t < 0) t += 1;
           if (t > 1) t -= 1;
@@ -571,7 +536,7 @@
           if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
           return p;
         };
-        const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+        const q = l < .5 ? l * (1 + s) : l + s - l * s;
         const p = 2 * l - q;
         return {
           r: Math.round(hue2rgb(p, q, h + 1 / 3) * 255),
@@ -580,130 +545,336 @@
         };
       }
 
-      function layerBaseline(layer) {
-        if (layer === "hull") return 0.08;
-        if (layer === "teak") return 0.52;
-        return 0.58;
+      function clamp(value, min, max) {
+        return Math.max(min, Math.min(max, value));
       }
 
-      function tintPixel(r, g, b, color, layer) {
-        const targetRgb = hexToRgb(color);
-        const target = rgbToHsl(targetRgb.r, targetRgb.g, targetRgb.b);
-        const original = rgbToHsl(r, g, b);
-        const difference = original.l - layerBaseline(layer);
-        const contrast = target.l > 0.78 ? 0.48 : target.l < 0.18 ? 0.58 : 0.74;
-        const lightness = Math.min(0.96, Math.max(0.025, target.l + difference * contrast));
-        const desaturation = Math.min(1, Math.max(0.28, 1 - Math.abs(lightness - 0.5) * 0.7));
-        return hslToRgb(target.h, target.s * desaturation, lightness);
+      function normalizedFrame(frame) {
+        return ((frame % FRAME_COUNT) + FRAME_COUNT) % FRAME_COUNT;
       }
 
-      function recolorLayer(image, color, layer) {
-        const layerCanvas = document.createElement("canvas");
-        layerCanvas.width = IMAGE_WIDTH;
-        layerCanvas.height = IMAGE_HEIGHT;
-        const layerContext = layerCanvas.getContext("2d", { willReadFrequently: true });
-        layerContext.drawImage(image, 0, 0, IMAGE_WIDTH, IMAGE_HEIGHT);
-        if (!color) return layerCanvas;
+      function clearFrameCache() {
+        frameCache.clear();
+      }
 
-        const imageData = layerContext.getImageData(0, 0, IMAGE_WIDTH, IMAGE_HEIGHT);
-        const pixels = imageData.data;
-        for (let i = 0; i < pixels.length; i += 4) {
-          if (pixels[i + 3] === 0) continue;
-          const tinted = tintPixel(pixels[i], pixels[i + 1], pixels[i + 2], color, layer);
-          pixels[i] = tinted.r;
-          pixels[i + 1] = tinted.g;
-          pixels[i + 2] = tinted.b;
+      function nearestFrame(position) {
+        return normalizedFrame(Math.round(position));
+      }
+
+      function layerToneRange(pixels) {
+        const histogram = new Array(256).fill(0);
+        let total = 0;
+
+        for (let index = 0; index < pixels.length; index += 4) {
+          if (pixels[index + 3] < 8) continue;
+          const luma = Math.round(
+            pixels[index] * .2126 +
+            pixels[index + 1] * .7152 +
+            pixels[index + 2] * .0722
+          );
+          histogram[luma] += 1;
+          total += 1;
         }
-        layerContext.putImageData(imageData, 0, 0);
-        return layerCanvas;
-      }
 
-      function draw() {
-        if (!images.base || !images.hull || !images.cushions || !images.teak) return;
-        context.imageSmoothingEnabled = true;
-        context.imageSmoothingQuality = "high";
-        context.clearRect(0, 0, IMAGE_WIDTH, IMAGE_HEIGHT);
-        context.drawImage(images.base, 0, 0, IMAGE_WIDTH, IMAGE_HEIGHT);
+        if (!total) return { low: 0, high: 255 };
 
-        ["hull", "cushions", "teak"].forEach((layer) => {
-          if (state[layer]) {
-            context.drawImage(recolorLayer(images[layer], state[layer], layer), 0, 0);
+        let seen = 0;
+        let low = 0;
+        let high = 255;
+        const lowTarget = total * .03;
+        const highTarget = total * .985;
+
+        for (let value = 0; value < histogram.length; value += 1) {
+          seen += histogram[value];
+          if (seen >= lowTarget) {
+            low = value;
+            break;
           }
+        }
+
+        seen = 0;
+        for (let value = 0; value < histogram.length; value += 1) {
+          seen += histogram[value];
+          if (seen >= highTarget) {
+            high = value;
+            break;
+          }
+        }
+
+        return { low, high: Math.max(high, low + 24) };
+      }
+
+      function shadeColor(targetRgb, shade, layer) {
+        const targetBrightness = (
+          targetRgb.r * .2126 +
+          targetRgb.g * .7152 +
+          targetRgb.b * .0722
+        ) / 255;
+        const lightColorBoost = clamp((targetBrightness - .66) / .34, 0, 1);
+        const profile = currentShade || {
+          hull: { shadow: .38, range: .64, lift: .03, specular: .17 },
+          cushions: { shadow: .48, range: .58, lift: .07, specular: .12 },
+          teak: { shadow: .44, range: .72, lift: .04, specular: .16 },
+        }[layer] || { shadow: .38, range: .72, lift: .06, specular: .16 };
+
+        const shadow = profile.shadow + (layer === "hull" ? lightColorBoost * .22 : 0);
+        const range = profile.range - (layer === "hull" ? lightColorBoost * .12 : 0);
+        const lift = profile.lift + (layer === "hull" ? lightColorBoost * .12 : 0);
+        const brightness = shadow + Math.pow(shade, .82) * range;
+        const highlight = Math.pow(clamp((shade - .76) / .24, 0, 1), 2) * profile.specular;
+        let shaded = {
+          r: targetRgb.r * brightness + 255 * highlight + 255 * lift * (1 - shade),
+          g: targetRgb.g * brightness + 255 * highlight + 255 * lift * (1 - shade),
+          b: targetRgb.b * brightness + 255 * highlight + 255 * lift * (1 - shade),
+        };
+
+        if (profile.saturation) {
+          const hsl = rgbToHsl(shaded.r, shaded.g, shaded.b);
+          shaded = hslToRgb(hsl.h, hsl.s * profile.saturation, hsl.l);
+        }
+
+        return {
+          r: Math.round(clamp(shaded.r, 0, 255)),
+          g: Math.round(clamp(shaded.g, 0, 255)),
+          b: Math.round(clamp(shaded.b, 0, 255)),
+        };
+      }
+
+      function selectedColor(role, color) {
+        return colors[role].find((item) => item.value === color) || null;
+      }
+
+      let currentShade = null;
+
+      function tintLayer(layer, color, frame, targetContext) {
+        layerContext.clearRect(0, 0, IMAGE_WIDTH, IMAGE_HEIGHT);
+        layerContext.drawImage(images[layer][frame], 0, 0);
+        const colorSpec = selectedColor(layer, color);
+        currentShade = colorSpec && colorSpec.shade ? colorSpec.shade : null;
+        const targetRgb = hexToRgb((colorSpec && colorSpec.render) || color);
+        const data = layerContext.getImageData(0, 0, IMAGE_WIDTH, IMAGE_HEIGHT);
+        const pixels = data.data;
+        const toneRange = layerToneRange(pixels);
+
+        for (let index = 0; index < pixels.length; index += 4) {
+          if (pixels[index + 3] < 8) continue;
+          const luma = (
+            pixels[index] * .2126 +
+            pixels[index + 1] * .7152 +
+            pixels[index + 2] * .0722
+          );
+          const shade = clamp((luma - toneRange.low) / (toneRange.high - toneRange.low), 0, 1);
+          const shaded = shadeColor(targetRgb, shade, layer);
+          pixels[index] = shaded.r;
+          pixels[index + 1] = shaded.g;
+          pixels[index + 2] = shaded.b;
+          if (layer === "hull") {
+            pixels[index + 3] = pixels[index + 3] > 22 ? 255 : Math.round(clamp(pixels[index + 3] * 5, 0, 255));
+          } else if (currentShade && typeof currentShade.alphaScale === "number") {
+            pixels[index + 3] = Math.round(clamp((currentShade.alphaBase || 0) + pixels[index + 3] * currentShade.alphaScale, 0, 255));
+          }
+        }
+
+        layerContext.putImageData(data, 0, 0);
+        targetContext.drawImage(layerCanvas, 0, 0);
+        currentShade = null;
+      }
+
+      function frameCacheKey(frame) {
+        return [
+          frame,
+          state.hull || "original",
+          state.cushions || "original",
+          state.teak || "original",
+        ].join("|");
+      }
+
+      function compositeFrame(frame) {
+        const key = frameCacheKey(frame);
+        if (frameCache.has(key)) return frameCache.get(key);
+
+        const output = document.createElement("canvas");
+        output.width = IMAGE_WIDTH;
+        output.height = IMAGE_HEIGHT;
+        const outputContext = output.getContext("2d", { willReadFrequently: true });
+        const hull = selectedColor("hull", state.hull);
+        const hullRender = hull && images.hull && images.hull[hull.asset];
+        outputContext.drawImage(hullRender ? hullRender[frame] : images.base[frame], 0, 0);
+        Object.entries(state).forEach(([layer, color]) => {
+          if (layer !== "hull" && color) tintLayer(layer, color, frame, outputContext);
+        });
+
+        if (frameCache.size > FRAME_COUNT * 2) frameCache.clear();
+        frameCache.set(key, output);
+        return output;
+      }
+
+      function draw(position = framePosition, force = false) {
+        if (!images.base) return;
+        const frame = nearestFrame(position);
+        if (!force && frame === renderedFrame) return;
+        context.clearRect(0, 0, IMAGE_WIDTH, IMAGE_HEIGHT);
+        context.drawImage(compositeFrame(frame), 0, 0);
+        currentFrame = frame;
+        renderedFrame = frame;
+      }
+
+      function setFrame(frame) {
+        framePosition = normalizedFrame(frame);
+        currentFrame = nearestFrame(framePosition);
+        draw(framePosition, true);
+      }
+
+      function stopInertia() {
+        if (inertiaFrame) cancelAnimationFrame(inertiaFrame);
+        inertiaFrame = 0;
+      }
+
+      function runInertia() {
+        if (dragging) return;
+        frameVelocity *= INERTIA_FRICTION;
+        if (Math.abs(frameVelocity) < MIN_VELOCITY) {
+          framePosition = nearestFrame(framePosition);
+          draw(framePosition, true);
+          stopInertia();
+          return;
+        }
+        framePosition = normalizedFrame(framePosition + frameVelocity * 16.67);
+        draw();
+        inertiaFrame = requestAnimationFrame(runInertia);
+      }
+
+      function renderPanels() {
+        document.querySelectorAll("[data-panel]").forEach((panel) => {
+          const role = panel.dataset.panel;
+          const swatches = panel.querySelector(".swatches");
+          const chosen = panel.querySelector("[data-chosen]");
+          const original = panel.querySelector(".original-link");
+          swatches.innerHTML = "";
+
+          colors[role].forEach((color) => {
+            const button = document.createElement("button");
+            button.className = "swatch";
+            button.type = "button";
+            button.style.setProperty("--swatch", color.value);
+            button.setAttribute("aria-label", color.name);
+            button.title = color.name;
+            button.addEventListener("click", () => {
+              state[role] = color.value;
+              clearFrameCache();
+              renderedFrame = -1;
+              renderPanels();
+              draw();
+            });
+            if (state[role] === color.value) button.classList.add("selected");
+            swatches.appendChild(button);
+          });
+
+          original.onclick = () => {
+            state[role] = null;
+            clearFrameCache();
+            renderedFrame = -1;
+            renderPanels();
+            draw();
+          };
+
+          const selected = colors[role].find((item) => item.value === state[role]);
+          chosen.textContent = selected ? selected.name : "Origineel";
         });
       }
 
-      function updatePanel(layer) {
-        const panel = document.querySelector(`[data-panel="${layer}"]`);
-        const selected = state[layer];
-        const known = colors[layer].find((color) => color.value === selected);
-        panel.querySelector("[data-chosen]").textContent = selected ? known.name : "Origineel";
-        panel.querySelectorAll(".swatch").forEach((button) => {
-          button.classList.toggle("selected", button.dataset.value === selected);
-        });
+      function startDrag(event) {
+        stopInertia();
+        dragging = true;
+        stage.classList.add("dragging");
+        dragStartX = event.clientX;
+        dragStartFrame = framePosition;
+        lastDragX = event.clientX;
+        lastDragTime = performance.now();
+        frameVelocity = 0;
+        stage.setPointerCapture(event.pointerId);
       }
 
-      function selectColor(layer, value) {
-        state[layer] = value;
-        updatePanel(layer);
+      function moveDrag(event) {
+        if (!dragging) return;
+        const now = performance.now();
+        const elapsed = Math.max(now - lastDragTime, 1);
+        const deltaX = event.clientX - dragStartX;
+        const stepX = event.clientX - lastDragX;
+        framePosition = normalizedFrame(dragStartFrame - deltaX / PIXELS_PER_FRAME);
+        frameVelocity = -(stepX / PIXELS_PER_FRAME) / elapsed;
+        lastDragX = event.clientX;
+        lastDragTime = now;
         draw();
       }
 
-      function buildPanel(layer) {
-        const panel = document.querySelector(`[data-panel="${layer}"]`);
-        const swatches = panel.querySelector(".swatches");
-        colors[layer].forEach((color) => {
-          const button = document.createElement("button");
-          button.type = "button";
-          button.className = "swatch";
-          button.dataset.value = color.value;
-          button.style.setProperty("--swatch", color.value);
-          button.setAttribute("aria-label", `${panel.querySelector("h2").textContent}: ${color.name}`);
-          button.title = color.name;
-          button.addEventListener("click", () => selectColor(layer, color.value));
-          swatches.appendChild(button);
-        });
-
-        panel.querySelector(".original-link").addEventListener("click", () => selectColor(layer, null));
-        updatePanel(layer);
+      function endDrag(event) {
+        dragging = false;
+        stage.classList.remove("dragging");
+        if (stage.hasPointerCapture(event.pointerId)) stage.releasePointerCapture(event.pointerId);
+        if (Math.abs(frameVelocity) >= MIN_VELOCITY) {
+          stopInertia();
+          inertiaFrame = requestAnimationFrame(runInertia);
+        }
       }
 
-      Object.keys(colors).forEach(buildPanel);
-
-      document.querySelector("[data-reset]").addEventListener("click", () => {
+      function reset() {
         state.hull = null;
         state.cushions = null;
         state.teak = null;
-        Object.keys(colors).forEach(updatePanel);
+        clearFrameCache();
+        renderedFrame = -1;
+        setFrame(0);
+        renderPanels();
         draw();
-      });
-
-      downloadButton.addEventListener("click", () => {
-        const link = document.createElement("a");
-        link.download = "mijn-dammer-configuratie.png";
-        link.href = canvas.toDataURL("image/png");
-        link.click();
-      });
-
-      function loadImage(key, source) {
-        return new Promise((resolve, reject) => {
-          const image = new Image();
-          image.onload = () => {
-            images[key] = image;
-            resolve();
-          };
-          image.onerror = () => reject(new Error(`Kon ${source} niet laden`));
-          image.src = source;
-        });
       }
 
-      Promise.all(Object.entries(sources).map(([key, source]) => loadImage(key, source))).then(() => {
-        frame.classList.remove("loading");
-        frame.classList.add("ready");
+      function downloadImage() {
+        const savedPosition = framePosition;
+        setFrame(Math.round(framePosition));
+        const link = document.createElement("a");
+        link.download = "mijn-dammer-360-configuratie.png";
+        link.href = canvas.toDataURL("image/png");
+        link.click();
+        framePosition = savedPosition;
+        draw(framePosition, true);
+      }
+
+      function normalizeParam(value) {
+        return value ? value.trim().toLowerCase().replace(/\s+/g, "") : "";
+      }
+
+      function applyUrlState() {
+        const params = new URLSearchParams(window.location.search);
+        ["hull", "cushions", "teak"].forEach((role) => {
+          const wanted = normalizeParam(params.get(role));
+          if (!wanted) return;
+          const match = colors[role].find((item) => (
+            normalizeParam(item.name) === wanted ||
+            normalizeParam(item.value) === wanted
+          ));
+          if (match) state[role] = match.value;
+        });
+
+        const frame = Number.parseInt(params.get("frame"), 10);
+        if (Number.isFinite(frame)) setFrame(frame);
+      }
+
+      stage.addEventListener("pointerdown", startDrag);
+      stage.addEventListener("pointermove", moveDrag);
+      stage.addEventListener("pointerup", endDrag);
+      stage.addEventListener("pointercancel", endDrag);
+      resetButton.addEventListener("click", reset);
+      downloadButton.addEventListener("click", downloadImage);
+      applyUrlState();
+      renderPanels();
+
+      loadFrames().then(() => {
         loader.remove();
         downloadButton.disabled = false;
         draw();
       }).catch(() => {
-        loader.textContent = "De Dammer-render kon niet worden geladen.";
+        loader.textContent = "Renders konden niet worden geladen.";
       });
     </script>
   </body>
