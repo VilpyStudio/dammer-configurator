@@ -440,6 +440,57 @@
       </div>
     </main>
 
+    <script>
+      (function () {
+        var force3d = /(?:\?|&)force3d=1(?:&|$)/.test(window.location.search);
+        var userAgent = navigator.userAgent || "";
+        var androidMatch = userAgent.match(/Android\s+(\d+(?:\.\d+)?)/i);
+        var androidVersion = androidMatch ? parseFloat(androidMatch[1]) : null;
+        var isAndroid = /Android/i.test(userAgent);
+        var supportsModules = "noModule" in document.createElement("script");
+        var supportsImportMap = !!(
+          window.HTMLScriptElement &&
+          HTMLScriptElement.supports &&
+          HTMLScriptElement.supports("importmap")
+        );
+
+        function supportsWebGL() {
+          try {
+            var canvas = document.createElement("canvas");
+            return !!(
+              window.WebGLRenderingContext &&
+              (canvas.getContext("webgl") || canvas.getContext("experimental-webgl"))
+            );
+          } catch (error) {
+            return false;
+          }
+        }
+
+        var lowMemoryAndroid = isAndroid && navigator.deviceMemory && navigator.deviceMemory <= 2;
+        var fallbackReason = "";
+        if (!supportsModules) fallbackReason = "nomodule";
+        else if (!supportsImportMap) fallbackReason = "no-importmap";
+        else if (!supportsWebGL()) fallbackReason = "no-webgl";
+        else if (androidVersion && androidVersion < 8) fallbackReason = "legacy-android";
+        else if (lowMemoryAndroid) fallbackReason = "low-memory-android";
+
+        window.__dammer3dCompat = {
+          force3d: force3d,
+          fallbackReason: fallbackReason,
+          isAndroid: isAndroid,
+          lowMemory: !!lowMemoryAndroid,
+          maxPixelRatio: isAndroid || lowMemoryAndroid ? 1 : 2,
+          loadTimeoutMs: isAndroid ? 18000 : 30000
+        };
+
+        if (fallbackReason && !force3d) {
+          window.location.replace("360.html?fallback=" + encodeURIComponent(fallbackReason));
+        }
+      })();
+    </script>
+    <script nomodule>
+      window.location.replace("360.html?fallback=nomodule");
+    </script>
     <script type="importmap">
       {
         "imports": {
@@ -452,6 +503,8 @@
       import * as THREE from "three";
       import { OrbitControls } from "three/addons/controls/OrbitControls.js";
       import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
+
+      const compat = window.__dammer3dCompat || {};
 
       const colors = {
         hull: [
@@ -529,8 +582,13 @@
       scene.background = null;
 
       const camera = new THREE.PerspectiveCamera(35, 1, 0.1, 1000);
-      const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      const renderer = new THREE.WebGLRenderer({
+        antialias: !compat.lowMemory,
+        alpha: true,
+        preserveDrawingBuffer: true,
+        powerPreference: compat.isAndroid ? "low-power" : "high-performance",
+      });
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, compat.maxPixelRatio || 2));
       renderer.outputColorSpace = THREE.SRGBColorSpace;
       renderer.toneMapping = THREE.ACESFilmicToneMapping;
       renderer.toneMappingExposure = 1.05;
@@ -560,6 +618,19 @@
       controls.addEventListener("start", () => {
         controls.autoRotate = false;
       });
+
+      renderer.domElement.addEventListener("webglcontextlost", (event) => {
+        event.preventDefault();
+        fallbackTo360("webgl-context-lost");
+      });
+
+      function fallbackTo360(reason) {
+        if (compat.force3d) {
+          loader.textContent = "3D model kon niet stabiel worden geladen.";
+          return;
+        }
+        window.location.replace(`360.html?fallback=${encodeURIComponent(reason)}`);
+      }
 
       function materialRole(name) {
         if (roleMaterials.hull.has(name)) return "hull";
@@ -1012,9 +1083,14 @@
       resetButton.addEventListener("click", reset);
       downloadButton.addEventListener("click", downloadImage);
 
+      const modelLoadTimer = window.setTimeout(() => {
+        fallbackTo360("3d-timeout");
+      }, compat.loadTimeoutMs || 30000);
+
       new GLTFLoader().load(
         "images/dammer-boat-blender-v3-web.glb?v=1",
         (gltf) => {
+          window.clearTimeout(modelLoadTimer);
           const model = gltf.scene;
           model.traverse((object) => {
             if (object.isMesh) prepareMesh(object);
@@ -1031,7 +1107,8 @@
           }
         },
         () => {
-          loader.textContent = "3D model kon niet worden geladen.";
+          window.clearTimeout(modelLoadTimer);
+          fallbackTo360("3d-load-error");
         }
       );
     </script>

@@ -126,6 +126,8 @@
         justify-content: center;
         min-height: 0;
         position: relative;
+        -ms-touch-action: none;
+        touch-action: none;
         user-select: none;
       }
 
@@ -503,7 +505,7 @@
       let inertiaFrame = 0;
 
       function frameName(frame) {
-        return String(frame).padStart(2, "0");
+        return frame < 10 ? "0" + frame : String(frame);
       }
 
       function imagePath(layer, frame) {
@@ -753,8 +755,9 @@
         const hull = selectedColor("hull", state.hull);
         const hullRender = hull && images.hull && images.hull[hull.asset];
         outputContext.drawImage(hullRender ? hullRender[frame] : images.base[frame], 0, 0);
-        Object.entries(state).forEach(([layer, color]) => {
-          if (layer !== "hull" && color) tintLayer(layer, color, frame, outputContext);
+        ["cushions", "teak"].forEach((layer) => {
+          const color = state[layer];
+          if (color) tintLayer(layer, color, frame, outputContext);
         });
 
         if (frameCache.size > FRAME_COUNT * 2) frameCache.clear();
@@ -836,39 +839,80 @@
         });
       }
 
+      function eventClientX(event) {
+        if (event.touches && event.touches.length) return event.touches[0].clientX;
+        if (event.changedTouches && event.changedTouches.length) return event.changedTouches[0].clientX;
+        return event.clientX;
+      }
+
       function startDrag(event) {
+        if (event.button && event.button !== 0) return;
+        if (event.cancelable) event.preventDefault();
+        const clientX = eventClientX(event);
+        if (typeof clientX !== "number") return;
         stopInertia();
         dragging = true;
         stage.classList.add("dragging");
-        dragStartX = event.clientX;
+        dragStartX = clientX;
         dragStartFrame = framePosition;
-        lastDragX = event.clientX;
+        lastDragX = clientX;
         lastDragTime = performance.now();
         frameVelocity = 0;
-        stage.setPointerCapture(event.pointerId);
+        if (event.pointerId !== undefined && stage.setPointerCapture) {
+          stage.setPointerCapture(event.pointerId);
+        }
       }
 
       function moveDrag(event) {
         if (!dragging) return;
+        if (event.cancelable) event.preventDefault();
+        const clientX = eventClientX(event);
+        if (typeof clientX !== "number") return;
         const now = performance.now();
         const elapsed = Math.max(now - lastDragTime, 1);
-        const deltaX = event.clientX - dragStartX;
-        const stepX = event.clientX - lastDragX;
+        const deltaX = clientX - dragStartX;
+        const stepX = clientX - lastDragX;
         framePosition = normalizedFrame(dragStartFrame - deltaX / PIXELS_PER_FRAME);
         frameVelocity = -(stepX / PIXELS_PER_FRAME) / elapsed;
-        lastDragX = event.clientX;
+        lastDragX = clientX;
         lastDragTime = now;
         draw();
       }
 
       function endDrag(event) {
+        if (!dragging) return;
         dragging = false;
         stage.classList.remove("dragging");
-        if (stage.hasPointerCapture(event.pointerId)) stage.releasePointerCapture(event.pointerId);
+        if (
+          event &&
+          event.pointerId !== undefined &&
+          stage.hasPointerCapture &&
+          stage.hasPointerCapture(event.pointerId)
+        ) {
+          stage.releasePointerCapture(event.pointerId);
+        }
         if (Math.abs(frameVelocity) >= MIN_VELOCITY) {
           stopInertia();
           inertiaFrame = requestAnimationFrame(runInertia);
         }
+      }
+
+      function bindDragControls() {
+        if (window.PointerEvent) {
+          stage.addEventListener("pointerdown", startDrag);
+          stage.addEventListener("pointermove", moveDrag);
+          stage.addEventListener("pointerup", endDrag);
+          stage.addEventListener("pointercancel", endDrag);
+          return;
+        }
+
+        stage.addEventListener("touchstart", startDrag, false);
+        window.addEventListener("touchmove", moveDrag, false);
+        window.addEventListener("touchend", endDrag, false);
+        window.addEventListener("touchcancel", endDrag, false);
+        stage.addEventListener("mousedown", startDrag, false);
+        window.addEventListener("mousemove", moveDrag, false);
+        window.addEventListener("mouseup", endDrag, false);
       }
 
       function reset() {
@@ -897,10 +941,15 @@
         return value ? value.trim().toLowerCase().replace(/\s+/g, "") : "";
       }
 
+      function queryParam(name) {
+        const pattern = new RegExp("[?&]" + name.replace(/[[]]/g, "\\$&") + "=([^&#]*)");
+        const match = pattern.exec(window.location.search);
+        return match ? decodeURIComponent(match[1].replace(/\+/g, " ")) : "";
+      }
+
       function applyUrlState() {
-        const params = new URLSearchParams(window.location.search);
         ["hull", "cushions", "teak"].forEach((role) => {
-          const wanted = normalizeParam(params.get(role));
+          const wanted = normalizeParam(queryParam(role));
           if (!wanted) return;
           const match = colors[role].find((item) => (
             normalizeParam(item.name) === wanted ||
@@ -909,14 +958,11 @@
           if (match) state[role] = match.value;
         });
 
-        const frame = Number.parseInt(params.get("frame"), 10);
-        if (Number.isFinite(frame)) setFrame(frame);
+        const frame = parseInt(queryParam("frame"), 10);
+        if (isFinite(frame)) setFrame(frame);
       }
 
-      stage.addEventListener("pointerdown", startDrag);
-      stage.addEventListener("pointermove", moveDrag);
-      stage.addEventListener("pointerup", endDrag);
-      stage.addEventListener("pointercancel", endDrag);
+      bindDragControls();
       resetButton.addEventListener("click", reset);
       downloadButton.addEventListener("click", downloadImage);
       applyUrlState();
