@@ -809,7 +809,7 @@
 
       function restoreOriginalMaps(material, role) {
         const hasOriginalTexture = Boolean(material.userData.originalMap);
-        material.color.set(hasOriginalTexture && role !== "hull" ? "#ffffff" : defaultColors[role]);
+        material.color.set(hasOriginalTexture && role !== "hull" ? defaultColors[role] : defaultColors[role]);
         material.map = material.userData.originalMap || null;
         material.normalMap = material.userData.originalNormalMap || null;
         material.roughnessMap = material.userData.originalRoughnessMap || null;
@@ -824,32 +824,44 @@
         material.userData.role = role;
 
         if (role === "teak") {
-          if (hasCustomColor) {
+          if (material.userData.originalMap) {
+            material.color.set(selectedColor);
+            material.map = material.userData.originalMap;
+            material.normalMap = material.userData.originalNormalMap || null;
+            material.roughnessMap = material.userData.originalRoughnessMap || null;
+            material.metalnessMap = material.userData.originalMetalnessMap || null;
+            material.bumpMap = null;
+            material.bumpScale = 0;
+          } else {
             material.color.set("#ffffff");
             material.map = getTeakTexture(selectedColor);
             material.normalMap = null;
             material.roughnessMap = null;
             material.metalnessMap = null;
             material.bumpMap = getTeakBumpTexture();
-            material.bumpScale = 0.03;
-          } else {
-            restoreOriginalMaps(material, role);
+            material.bumpScale = 0.025;
           }
-          material.roughness = hasCustomColor ? 0.66 : 0.74;
+          material.roughness = hasCustomColor ? 0.7 : 0.76;
           material.metalness = 0;
         } else if (role === "cushions") {
-          if (hasCustomColor) {
+          if (material.userData.originalMap) {
+            material.color.set(selectedColor);
+            material.map = material.userData.originalMap;
+            material.normalMap = material.userData.originalNormalMap || null;
+            material.roughnessMap = material.userData.originalRoughnessMap || null;
+            material.metalnessMap = material.userData.originalMetalnessMap || null;
+            material.bumpMap = null;
+            material.bumpScale = 0;
+          } else {
             material.color.set("#ffffff");
             material.map = getCushionTexture(selectedColor);
             material.normalMap = null;
             material.roughnessMap = null;
             material.metalnessMap = null;
             material.bumpMap = getCushionBumpTexture();
-            material.bumpScale = 0.022;
-          } else {
-            restoreOriginalMaps(material, role);
+            material.bumpScale = 0.018;
           }
-          material.roughness = 0.84;
+          material.roughness = 0.86;
           material.metalness = 0;
         } else {
           material.color.set(selectedColor);
