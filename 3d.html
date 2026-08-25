@@ -346,10 +346,6 @@
           gap: 10px;
         }
 
-        .flat-link {
-          display: none;
-        }
-
         .reset-button,
         .flat-link {
           font-size: 11px;
@@ -515,6 +511,20 @@
           loadTimeoutMs: isAndroid ? 18000 : 30000
         };
 
+        window.__dammer3dModuleReady = false;
+        if (!fallbackReason && !force3d) {
+          var moduleTimer = window.setTimeout(function () {
+            if (!window.__dammer3dModuleReady) {
+              window.location.replace("360.html?fallback=module-timeout");
+            }
+          }, 8000);
+
+          window.__dammer3dConfirmModule = function () {
+            window.__dammer3dModuleReady = true;
+            window.clearTimeout(moduleTimer);
+          };
+        }
+
         if (fallbackReason && !force3d) {
           window.location.replace("360.html?fallback=" + encodeURIComponent(fallbackReason));
         }
@@ -535,6 +545,8 @@
       import * as THREE from "three";
       import { OrbitControls } from "three/addons/controls/OrbitControls.js";
       import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
+
+      if (window.__dammer3dConfirmModule) window.__dammer3dConfirmModule();
 
       const compat = window.__dammer3dCompat || {};
       const isCompactViewport = () => window.matchMedia("(max-width: 700px)").matches;
