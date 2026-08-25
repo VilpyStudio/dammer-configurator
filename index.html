@@ -8,11 +8,11 @@
     <meta http-equiv="Expires" content="0">
     <title>Dammer 3D Configurator</title>
     <meta name="description" content="Bekijk en configureer de Dammer in 3D.">
-    <link rel="preload" href="images/dammer-boat-blender-v3-web.glb?v=2" as="fetch" type="model/gltf-binary" media="(min-width: 701px)" crossorigin>
-    <link rel="preload" href="images/dammer-boat-blender-v3-mobile.glb?v=1" as="fetch" type="model/gltf-binary" media="(max-width: 700px)" crossorigin>
-    <link rel="modulepreload" href="vendor/three/three.module.js">
-    <link rel="modulepreload" href="vendor/three/addons/controls/OrbitControls.js">
-    <link rel="modulepreload" href="vendor/three/addons/loaders/GLTFLoader.js">
+    <link rel="preload" href="images/dammer-boat-blender-v3-web.glb?v=20260825-2120" as="fetch" type="model/gltf-binary" media="(min-width: 701px)" crossorigin>
+    <link rel="preload" href="images/dammer-boat-blender-v3-mobile.glb?v=20260825-2120" as="fetch" type="model/gltf-binary" media="(max-width: 700px)" crossorigin>
+    <link rel="modulepreload" href="vendor/three/three.module.js?v=20260825-2120">
+    <link rel="modulepreload" href="vendor/three/addons/controls/OrbitControls.js?v=20260825-2120">
+    <link rel="modulepreload" href="vendor/three/addons/loaders/GLTFLoader.js?v=20260825-2120">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&display=swap" rel="stylesheet">
@@ -433,7 +433,7 @@
     <main class="site-shell">
       <header class="topbar">
         <a class="brand" href="index.html" aria-label="Dammer configurator">
-          <img src="images/dammer-logo.svg" alt="Dammer 700">
+          <img src="images/dammer-logo.svg?v=20260825-2120" alt="Dammer 700">
         </a>
         <div class="topbar-actions">
           <button class="reset-button" type="button" data-reset aria-label="Opnieuw instellen">Reset</button>
@@ -541,15 +541,15 @@
       document.documentElement.dataset.dammer3dFallback = "nomodule";
     </script>
     <script type="module">
-      import * as THREE from "./vendor/three/three.module.js";
-      import { OrbitControls } from "./vendor/three/addons/controls/OrbitControls.js";
-      import { GLTFLoader } from "./vendor/three/addons/loaders/GLTFLoader.js";
+      import * as THREE from "./vendor/three/three.module.js?v=20260825-2120";
+      import { OrbitControls } from "./vendor/three/addons/controls/OrbitControls.js?v=20260825-2120";
+      import { GLTFLoader } from "./vendor/three/addons/loaders/GLTFLoader.js?v=20260825-2120";
 
       const compat = window.__dammer3dCompat || {};
       const isCompactViewport = () => window.matchMedia("(max-width: 700px)").matches;
       const modelUrl = isCompactViewport()
-        ? "images/dammer-boat-blender-v3-mobile.glb?v=1"
-        : "images/dammer-boat-blender-v3-web.glb?v=2";
+        ? "images/dammer-boat-blender-v3-mobile.glb?v=20260825-2120"
+        : "images/dammer-boat-blender-v3-web.glb?v=20260825-2120";
 
       const colors = {
         hull: [
