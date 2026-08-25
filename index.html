@@ -7,10 +7,9 @@
     <meta name="description" content="Bekijk en configureer de Dammer in 3D.">
     <link rel="preload" href="images/dammer-boat-blender-v3-web.glb?v=2" as="fetch" type="model/gltf-binary" media="(min-width: 701px)" crossorigin>
     <link rel="preload" href="images/dammer-boat-blender-v3-mobile.glb?v=1" as="fetch" type="model/gltf-binary" media="(max-width: 700px)" crossorigin>
-    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-    <link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/three@0.166.1/build/three.module.js">
-    <link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/three@0.166.1/examples/jsm/controls/OrbitControls.js">
-    <link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/three@0.166.1/examples/jsm/loaders/GLTFLoader.js">
+    <link rel="modulepreload" href="vendor/three/three.module.js">
+    <link rel="modulepreload" href="vendor/three/addons/controls/OrbitControls.js">
+    <link rel="modulepreload" href="vendor/three/addons/loaders/GLTFLoader.js">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&display=swap" rel="stylesheet">
@@ -361,8 +360,8 @@
         }
 
         .viewer {
-          grid-template-rows: auto 300px auto;
-          min-height: 430px;
+          grid-template-rows: auto minmax(390px, 54vh) auto;
+          min-height: 520px;
           padding: 22px 16px 8px;
         }
 
@@ -378,7 +377,7 @@
         }
 
         .stage canvas {
-          min-height: 300px;
+          min-height: 390px;
         }
 
         .viewer-note {
@@ -525,8 +524,8 @@
     <script type="importmap">
       {
         "imports": {
-          "three": "https://cdn.jsdelivr.net/npm/three@0.166.1/build/three.module.js",
-          "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.166.1/examples/jsm/"
+          "three": "./vendor/three/three.module.js",
+          "three/addons/": "./vendor/three/addons/"
         }
       }
     </script>
@@ -1058,7 +1057,7 @@
         const verticalFov = THREE.MathUtils.degToRad(camera.fov);
         const horizontalFov = 2 * Math.atan(Math.tan(verticalFov / 2) * camera.aspect);
         const fitFov = Math.min(verticalFov, horizontalFov);
-        const distance = (modelRadius / Math.sin(fitFov / 2)) * (compact ? 3 : 1.08);
+        const distance = (modelRadius / Math.sin(fitFov / 2)) * (compact ? 1.05 : 0.58);
         const target = modelCenter.clone();
         target.y += compact ? -0.12 : 0.6;
         const direction = new THREE.Vector3(
