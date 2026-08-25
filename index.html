@@ -4,13 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Dammer 3D Configurator</title>
-    <meta name="description" content="Bekijk en configureer de Dammer in 3D.">
-    <link rel="preload" href="images/dammer-boat-blender-v3-web.glb?v=2" as="fetch" type="model/gltf-binary" media="(min-width: 701px)" crossorigin>
-    <link rel="preload" href="images/dammer-boat-blender-v3-mobile.glb?v=1" as="fetch" type="model/gltf-binary" media="(max-width: 700px)" crossorigin>
-    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-    <link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/three@0.166.1/build/three.module.js">
-    <link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/three@0.166.1/examples/jsm/controls/OrbitControls.js">
-    <link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/three@0.166.1/examples/jsm/loaders/GLTFLoader.js">
+    <meta name="description" content="Configureer de Dammer met echte Blender-renders.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&display=swap" rel="stylesheet">
@@ -118,7 +112,6 @@
         display: block;
         font-size: 12px;
         font-weight: 700;
-        letter-spacing: 0;
         margin-bottom: 14px;
         text-transform: uppercase;
       }
@@ -127,24 +120,34 @@
         font-size: 42px;
         font-size: clamp(30px, 3vw, 48px);
         font-weight: 700;
-        letter-spacing: 0;
         line-height: 1.06;
         margin: 0;
         max-width: 680px;
       }
 
       .stage {
+        align-items: center;
+        cursor: grab;
+        display: flex;
+        justify-content: center;
         min-height: 0;
         position: relative;
+        -ms-touch-action: none;
+        touch-action: none;
+        user-select: none;
+      }
+
+      .stage.dragging {
+        cursor: grabbing;
       }
 
       .stage canvas {
         display: block;
-        height: 100%;
-        min-height: 560px;
-        outline: none;
-        touch-action: none;
-        width: 100%;
+        filter: drop-shadow(0 28px 34px rgba(30,42,33,.12));
+        height: auto;
+        max-height: min(76vh, 820px);
+        max-width: 100%;
+        width: auto;
       }
 
       .loader {
@@ -198,7 +201,6 @@
         color: #7b837d;
         font-size: 10px;
         font-weight: 700;
-        letter-spacing: 0;
         margin: 0 0 6px;
         text-transform: uppercase;
       }
@@ -206,7 +208,6 @@
       .controls-intro h2 {
         font-size: 25px;
         font-weight: 700;
-        letter-spacing: 0;
         line-height: 1;
         margin: 0;
       }
@@ -319,11 +320,7 @@
         }
 
         .viewer {
-          min-height: 680px;
-        }
-
-        .stage canvas {
-          min-height: 500px;
+          min-height: auto;
         }
 
         .controls {
@@ -332,73 +329,64 @@
         }
       }
 
-      @media (max-width: 540px) {
+      @media (max-width: 640px) {
         .topbar {
           height: 64px;
-          padding: 0 14px;
+          padding: 0 12px;
         }
 
         .brand img {
-          max-width: 150px;
+          width: 150px;
         }
 
-        .topbar-actions {
-          gap: 10px;
-        }
-
-        .flat-link {
-          display: none;
-        }
-
-        .reset-button,
-        .flat-link {
+        .reset-button {
           font-size: 11px;
           white-space: nowrap;
         }
 
-        .configurator {
-          min-height: calc(100vh - 64px);
+        .topbar-actions {
+          display: none;
         }
 
         .viewer {
-          grid-template-rows: auto 300px auto;
-          min-height: 430px;
-          padding: 22px 16px 8px;
+          grid-template-rows: auto auto auto;
+          padding: 18px 16px 10px;
         }
 
         .viewer-copy span {
           font-size: 10px;
-          margin-bottom: 8px;
+          margin-bottom: 7px;
         }
 
         .viewer-copy h1 {
           font-size: 24px;
+          font-size: clamp(21px, 6.4vw, 27px);
           line-height: 1.04;
-          max-width: 300px;
+          max-width: 280px;
+        }
+
+        .stage {
+          margin: 0 0 -8px;
+          overflow: hidden;
         }
 
         .stage canvas {
-          min-height: 300px;
+          max-height: none;
+          max-width: 100%;
+          transform: translateY(-5%);
+          width: 100%;
         }
 
         .viewer-note {
           font-size: 8px;
-          line-height: 1.3;
-          margin: 0 auto;
+          line-height: 1.35;
+          margin: -8px auto 0;
           max-width: 260px;
+          padding: 0;
         }
 
         .controls {
-          padding: 34px 22px 42px;
-        }
-      }
-
-      @media (prefers-reduced-motion: reduce) {
-        *,
-        *::before,
-        *::after {
-          scroll-behavior: auto !important;
-          transition: none !important;
+          padding: 28px 22px 36px;
         }
       }
     </style>
@@ -410,19 +398,19 @@
           <img src="images/dammer-logo.svg" alt="Dammer 700">
         </a>
         <div class="topbar-actions">
-          <a class="flat-link" href="360.html">360 render</a>
           <button class="reset-button" type="button" data-reset>Opnieuw instellen</button>
         </div>
       </header>
 
       <div class="configurator">
-        <section class="viewer" aria-label="3D voorbeeld van de samengestelde Dammer">
+        <section class="viewer" aria-label="Sleepbare renderconfigurator van de Dammer">
           <div class="viewer-copy">
-            <span>3D testversie</span>
+            <span>Stel jouw uitvoering samen</span>
             <h1>Maak de Dammer van jou.</h1>
           </div>
           <div class="stage" data-stage>
-            <div class="loader" data-loader>Dammer wordt geladen...</div>
+            <div class="loader" data-loader>Dammer renders worden geladen...</div>
+            <canvas width="1280" height="900" aria-label="Sleepbare Dammer met gekozen kleuren"></canvas>
           </div>
           <p class="viewer-note">Kleuren op het scherm kunnen afwijken van de werkelijke materialen.</p>
         </section>
@@ -436,27 +424,27 @@
             </div>
           </div>
 
-          <section class="control-group" aria-labelledby="romp-title" data-panel="hull">
+          <section class="control-group" data-panel="hull">
             <div class="control-heading">
-              <h2 id="romp-title">Romp</h2>
+              <h2>Romp</h2>
               <span data-chosen>Origineel</span>
             </div>
             <div class="swatches"></div>
             <button class="original-link" type="button">Gebruik originele kleur</button>
           </section>
 
-          <section class="control-group" aria-labelledby="kussens-title" data-panel="cushions">
+          <section class="control-group" data-panel="cushions">
             <div class="control-heading">
-              <h2 id="kussens-title">Kussens</h2>
+              <h2>Kussens</h2>
               <span data-chosen>Origineel</span>
             </div>
             <div class="swatches"></div>
             <button class="original-link" type="button">Gebruik originele kleur</button>
           </section>
 
-          <section class="control-group" aria-labelledby="teak-title" data-panel="teak">
+          <section class="control-group" data-panel="teak">
             <div class="control-heading">
-              <h2 id="teak-title">Teakdeck</h2>
+              <h2>Teakdeck</h2>
               <span data-chosen>Origineel</span>
             </div>
             <div class="swatches"></div>
@@ -472,217 +460,136 @@
       </div>
     </main>
 
-    <script>
-      (function () {
-        var force3d = /(?:\?|&)force3d=1(?:&|$)/.test(window.location.search);
-        var userAgent = navigator.userAgent || "";
-        var androidMatch = userAgent.match(/Android\s+(\d+(?:\.\d+)?)/i);
-        var androidVersion = androidMatch ? parseFloat(androidMatch[1]) : null;
-        var isAndroid = /Android/i.test(userAgent);
-        var supportsModules = "noModule" in document.createElement("script");
-        var supportsImportMap = !!(
-          window.HTMLScriptElement &&
-          HTMLScriptElement.supports &&
-          HTMLScriptElement.supports("importmap")
-        );
-
-        function supportsWebGL() {
-          try {
-            var canvas = document.createElement("canvas");
-            return !!(
-              window.WebGLRenderingContext &&
-              (canvas.getContext("webgl") || canvas.getContext("experimental-webgl"))
-            );
-          } catch (error) {
-            return false;
-          }
-        }
-
-        var lowMemoryAndroid = isAndroid && navigator.deviceMemory && navigator.deviceMemory <= 2;
-        var fallbackReason = "";
-        if (!supportsModules) fallbackReason = "nomodule";
-        else if (!supportsImportMap) fallbackReason = "no-importmap";
-        else if (!supportsWebGL()) fallbackReason = "no-webgl";
-        else if (androidVersion && androidVersion < 8) fallbackReason = "legacy-android";
-        else if (lowMemoryAndroid) fallbackReason = "low-memory-android";
-
-        window.__dammer3dCompat = {
-          force3d: force3d,
-          fallbackReason: fallbackReason,
-          isAndroid: isAndroid,
-          lowMemory: !!lowMemoryAndroid,
-          maxPixelRatio: isAndroid || lowMemoryAndroid ? 1 : 2,
-          loadTimeoutMs: isAndroid ? 18000 : 30000
-        };
-
-        if (fallbackReason && !force3d) {
-          window.location.replace("360.html?fallback=" + encodeURIComponent(fallbackReason));
-        }
-      })();
-    </script>
-    <script nomodule>
-      window.location.replace("360.html?fallback=nomodule");
-    </script>
-    <script type="importmap">
-      {
-        "imports": {
-          "three": "https://cdn.jsdelivr.net/npm/three@0.166.1/build/three.module.js",
-          "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.166.1/examples/jsm/"
-        }
-      }
-    </script>
+    <script nomodule src="legacy-360.js?v=1"></script>
     <script type="module">
-      import * as THREE from "three";
-      import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-      import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
-
-      const compat = window.__dammer3dCompat || {};
-      const isCompactViewport = () => window.matchMedia("(max-width: 700px)").matches;
-      const modelUrl = isCompactViewport()
-        ? "images/dammer-boat-blender-v3-mobile.glb?v=1"
-        : "images/dammer-boat-blender-v3-web.glb?v=2";
+      const FRAME_COUNT = 8;
+      const IMAGE_WIDTH = 1280;
+      const IMAGE_HEIGHT = 900;
+      const IMAGE_VERSION = "12";
 
       const colors = {
         hull: [
-          { name: "RAL 9010", value: "#f1ede1" },
-          { name: "RAL 1013", value: "#e3d9c6" },
-          { name: "RAL 6034", value: "#7fb5b5" },
-          { name: "RAL 7033", value: "#7d8471" },
-          { name: "RAL 7034", value: "#928e85" },
-          { name: "RAL 7038", value: "#b5b8b1" },
-          { name: "RAL 7039", value: "#6c6960" },
+          { name: "RAL 9010", value: "#f1ede1", asset: "ral9010" },
+          { name: "RAL 1013", value: "#e3d9c6", asset: "ral1013" },
+          { name: "RAL 6034", value: "#7fb5b5", asset: "ral6034" },
+          { name: "RAL 7033", value: "#7d8471", asset: "ral7033" },
+          { name: "RAL 7034", value: "#928e85", asset: "ral7034" },
+          { name: "RAL 7038", value: "#b5b8b1", asset: "ral7038" },
+          { name: "RAL 7039", value: "#6c6960", asset: "ral7039" },
         ],
         cushions: [
-          { name: "Cognac", value: "#b96936" },
-          { name: "Creme", value: "#d8ccb4" },
-          { name: "Taupe", value: "#877768" },
-          { name: "Donkerbruin", value: "#49362d" },
-          { name: "Marine", value: "#293f55" },
-          { name: "Lichtgrijs", value: "#b7b8b5" },
+          { name: "Cognac", value: "#b96936", render: "#bd6b37", shade: { shadow: .48, range: .58, lift: .02, specular: .07, alphaBase: 24, alphaScale: 1.36 } },
+          { name: "Creme", value: "#d8ccb4", render: "#d8cbb2", shade: { shadow: .60, range: .42, lift: .06, specular: .05, alphaBase: 18, alphaScale: 1.22 } },
+          { name: "Taupe", value: "#877768", render: "#87786a", shade: { shadow: .50, range: .52, lift: .03, specular: .05, alphaBase: 20, alphaScale: 1.28 } },
+          { name: "Donkerbruin", value: "#49362d", render: "#4e382f", shade: { shadow: .48, range: .62, lift: .00, specular: .05, alphaBase: 24, alphaScale: 1.36 } },
+          { name: "Marine", value: "#293f55", render: "#2c4359", shade: { shadow: .48, range: .60, lift: .00, specular: .05, alphaBase: 24, alphaScale: 1.36 } },
+          { name: "Lichtgrijs", value: "#b7b8b5", render: "#b7b8b4", shade: { shadow: .58, range: .44, lift: .05, specular: .04, alphaBase: 18, alphaScale: 1.22 } },
         ],
         teak: [
-          { name: "Naturel teak", value: "#c98f4d" },
-          { name: "Honing teak", value: "#d6a864" },
-          { name: "Licht eiken", value: "#d4bd91" },
-          { name: "Vergrijsd teak", value: "#928b7b" },
+          { name: "Naturel teak", value: "#c98f4d", render: "#c58b4a", shade: { shadow: .46, range: .62, lift: .02, specular: .08, alphaBase: 12, alphaScale: 1.18 } },
+          { name: "Honing teak", value: "#d6a864", render: "#d1a05e", shade: { shadow: .48, range: .58, lift: .03, specular: .08, alphaBase: 12, alphaScale: 1.16 } },
+          { name: "Licht eiken", value: "#d4bd91", render: "#d3bd91", shade: { shadow: .55, range: .48, lift: .04, specular: .07, alphaBase: 10, alphaScale: 1.12 } },
+          { name: "Vergrijsd teak", value: "#928b7b", render: "#928b7d", shade: { shadow: .50, range: .52, lift: .02, specular: .06, alphaBase: 10, alphaScale: 1.14 } },
         ],
-      };
-
-      const defaultColors = {
-        hull: "#080907",
-        cushions: "#e2b9a5",
-        teak: "#9b9283",
-      };
-
-      const roleMaterials = {
-        hull: new Set(["config_hull"]),
-        cushions: new Set(["config_cushions"]),
-        teak: new Set(["config_teak"]),
-      };
-
-      const fixedMaterialStyles = {
-        "fixed_white_plastic": { color: "#f2f1ec", roughness: 0.48, metalness: 0 },
-        "fixed_inner_body": { color: "#f1ede7", roughness: 0.5, metalness: 0 },
-        "fixed_dark_trim": { color: "#4a1c17", roughness: 0.42, metalness: 0, clearMaps: true },
-        "fixed_steering_wood": { color: "#8c562f", roughness: 0.46, metalness: 0 },
-        "fixed_metal": { color: "#c4c4bc", roughness: 0.22, metalness: 0.85 },
-        "fixed_black_metal": { color: "#111410", roughness: 0.28, metalness: 0.65 },
-        "fixed_black_plastic": { color: "#111410", roughness: 0.42, metalness: 0 },
-        "fixed_black_wood": { color: "#17110f", roughness: 0.5, metalness: 0 },
-        "fixed_glass": { color: "#dbe7e4", roughness: 0.12, metalness: 0, opacity: 0.36 },
-        "White plastic": { color: "#f2f1ec", roughness: 0.48, metalness: 0 },
-        "Very dark red wood": { color: "#4a1c17", roughness: 0.42, metalness: 0, clearMaps: true },
-        "Very dark red wood_2": { color: "#4a1c17", roughness: 0.42, metalness: 0, clearMaps: true },
-        "Very dark red wood3": { color: "#4a1c17", roughness: 0.42, metalness: 0, clearMaps: true },
-        "Stainless steel": { color: "#c4c4bc", roughness: 0.22, metalness: 0.85 },
-        "Steel with procedural imperfections": { color: "#9c9d96", roughness: 0.26, metalness: 0.75 },
-        "Scratched black metal": { color: "#111410", roughness: 0.28, metalness: 0.65 },
-        "Black plastic": { color: "#111410", roughness: 0.42, metalness: 0 },
-        "Black wood": { color: "#17110f", roughness: 0.5, metalness: 0 },
-        "Blur Translucent Glass (glass)": { color: "#dbe7e4", roughness: 0.12, metalness: 0, opacity: 0.36 },
-        "Inner_body": { color: "#f1ede7", roughness: 0.5, metalness: 0 },
-        "Material_001": { color: "#f1ede7", roughness: 0.5, metalness: 0 },
-        "Material_003": { color: "#f1ede7", roughness: 0.5, metalness: 0 },
-        "metal": { color: "#c4c4bc", roughness: 0.2, metalness: 0.85 },
       };
 
       const state = { hull: null, cushions: null, teak: null };
+      const canvas = document.querySelector("canvas");
+      const context = canvas.getContext("2d", { willReadFrequently: true });
+      const layerCanvas = document.createElement("canvas");
+      layerCanvas.width = IMAGE_WIDTH;
+      layerCanvas.height = IMAGE_HEIGHT;
+      const layerContext = layerCanvas.getContext("2d", { willReadFrequently: true });
       const stage = document.querySelector("[data-stage]");
       const loader = document.querySelector("[data-loader]");
       const downloadButton = document.querySelector("[data-download]");
       const resetButton = document.querySelector("[data-reset]");
-      const configurableMaterials = { hull: [], cushions: [], teak: [] };
-      const textureCache = { cushions: new Map(), teak: new Map(), tinted: new Map() };
+      const images = {};
+      const frameCache = new Map();
+      const hullLoadPromises = new Map();
+      const PIXELS_PER_FRAME = 48;
+      const INERTIA_FRICTION = .90;
+      const MIN_VELOCITY = .002;
+      let currentFrame = 0;
+      let framePosition = 0;
+      let renderedFrame = -1;
+      let dragStartX = 0;
+      let dragStartFrame = 0;
+      let dragging = false;
+      let lastDragX = 0;
+      let lastDragTime = 0;
+      let frameVelocity = 0;
+      let inertiaFrame = 0;
 
-      const scene = new THREE.Scene();
-      scene.background = null;
-
-      const camera = new THREE.PerspectiveCamera(35, 1, 0.1, 1000);
-      const renderer = new THREE.WebGLRenderer({
-        antialias: !compat.lowMemory,
-        alpha: true,
-        preserveDrawingBuffer: false,
-        powerPreference: compat.isAndroid ? "low-power" : "high-performance",
-      });
-      renderer.setPixelRatio(Math.min(
-        window.devicePixelRatio || 1,
-        isCompactViewport() ? 1.25 : (compat.maxPixelRatio || 1.6)
-      ));
-      renderer.outputColorSpace = THREE.SRGBColorSpace;
-      renderer.toneMapping = THREE.ACESFilmicToneMapping;
-      renderer.toneMappingExposure = 1.05;
-      stage.appendChild(renderer.domElement);
-      const textureAnisotropy = Math.min(
-        renderer.capabilities.getMaxAnisotropy(),
-        isCompactViewport() ? 2 : 6
-      );
-
-      const controls = new OrbitControls(camera, renderer.domElement);
-      controls.enableDamping = true;
-      controls.dampingFactor = 0.075;
-      controls.enablePan = false;
-      controls.enableZoom = true;
-      controls.minDistance = 62;
-      controls.maxDistance = 160;
-      controls.autoRotate = !isCompactViewport();
-      controls.autoRotateSpeed = 0.28;
-      let modelRadius = 0;
-      let boatModel = null;
-      const modelCenter = new THREE.Vector3();
-
-      const ambient = new THREE.HemisphereLight(0xffffff, 0xd8ddd5, 2.15);
-      scene.add(ambient);
-
-      const key = new THREE.DirectionalLight(0xffffff, 4.1);
-      key.position.set(-35, 50, 36);
-      scene.add(key);
-
-      const rim = new THREE.DirectionalLight(0xe8fff1, 1.8);
-      rim.position.set(44, 18, -30);
-      scene.add(rim);
-
-      controls.addEventListener("start", () => {
-        controls.autoRotate = false;
-      });
-
-      renderer.domElement.addEventListener("webglcontextlost", (event) => {
-        event.preventDefault();
-        fallbackTo360("webgl-context-lost");
-      });
-
-      function fallbackTo360(reason) {
-        if (compat.force3d) {
-          loader.textContent = "3D model kon niet stabiel worden geladen.";
-          return;
-        }
-        window.location.replace(`360.html?fallback=${encodeURIComponent(reason)}`);
+      function isCompactViewport() {
+        return window.matchMedia("(max-width: 640px)").matches;
       }
 
-      function materialRole(name) {
-        if (roleMaterials.hull.has(name)) return "hull";
-        if (roleMaterials.cushions.has(name)) return "cushions";
-        if (roleMaterials.teak.has(name)) return "teak";
-        return null;
+      function frameName(frame) {
+        return frame < 10 ? "0" + frame : String(frame);
+      }
+
+      function imagePath(layer, frame) {
+        return `images/360-8/${layer}-${frameName(frame)}.png?v=${IMAGE_VERSION}`;
+      }
+
+      function hullImagePath(colorKey, frame) {
+        return `images/360-hull/hull-${colorKey}-${frameName(frame)}.png?v=${IMAGE_VERSION}`;
+      }
+
+      function loadImage(src) {
+        return new Promise((resolve, reject) => {
+          const image = new Image();
+          image.onload = () => resolve(image);
+          image.onerror = reject;
+          image.src = src;
+        });
+      }
+
+      async function loadFrames() {
+        const layers = ["base", "cushions", "teak"];
+        let loaded = 0;
+        const total = FRAME_COUNT * layers.length;
+        await Promise.all(layers.map(async (layer) => {
+          images[layer] = [];
+          for (let frame = 0; frame < FRAME_COUNT; frame += 1) {
+            images[layer][frame] = await loadImage(imagePath(layer, frame));
+            loaded += 1;
+            loader.textContent = `Dammer renders worden geladen... ${Math.round((loaded / total) * 100)}%`;
+          }
+        }));
+
+        images.hull = {};
+      }
+
+      function loadHullColor(asset) {
+        if (images.hull && images.hull[asset] && images.hull[asset].filter(Boolean).length === FRAME_COUNT) {
+          return Promise.resolve();
+        }
+        if (hullLoadPromises.has(asset)) return hullLoadPromises.get(asset);
+
+        const promise = (async () => {
+          if (!images.hull) images.hull = {};
+          const frames = images.hull[asset] || [];
+          images.hull[asset] = frames;
+          for (let frame = 0; frame < FRAME_COUNT; frame += 1) {
+            if (!frames[frame]) frames[frame] = await loadImage(hullImagePath(asset, frame));
+          }
+        })();
+        hullLoadPromises.set(asset, promise);
+        return promise;
+      }
+
+      function warmHullRenders() {
+        colors.hull.reduce((queue, color) => (
+          queue.then(() => loadHullColor(color.asset).then(() => {
+            const selectedHull = selectedColor("hull", state.hull);
+            if (selectedHull && selectedHull.asset === color.asset) {
+              clearFrameCache();
+              draw(framePosition, true);
+            }
+          }).catch(() => {}))
+        ), Promise.resolve());
       }
 
       function hexToRgb(hex) {
@@ -694,391 +601,256 @@
         };
       }
 
-      function clamp(value) {
-        return Math.max(0, Math.min(255, Math.round(value)));
+      function rgbToHsl(r, g, b) {
+        r /= 255;
+        g /= 255;
+        b /= 255;
+        const max = Math.max(r, g, b);
+        const min = Math.min(r, g, b);
+        let h = 0;
+        let s = 0;
+        const l = (max + min) / 2;
+        if (max !== min) {
+          const d = max - min;
+          s = l > .5 ? d / (2 - max - min) : d / (max + min);
+          if (max === r) h = (g - b) / d + (g < b ? 6 : 0);
+          else if (max === g) h = (b - r) / d + 2;
+          else h = (r - g) / d + 4;
+          h /= 6;
+        }
+        return { h, s, l };
       }
 
-      function shade(hex, amount) {
-        const color = hexToRgb(hex);
-        return `rgb(${clamp(color.r + amount)}, ${clamp(color.g + amount)}, ${clamp(color.b + amount)})`;
+      function hslToRgb(h, s, l) {
+        if (s === 0) {
+          const value = Math.round(l * 255);
+          return { r: value, g: value, b: value };
+        }
+        const hue2rgb = (p, q, t) => {
+          if (t < 0) t += 1;
+          if (t > 1) t -= 1;
+          if (t < 1 / 6) return p + (q - p) * 6 * t;
+          if (t < 1 / 2) return q;
+          if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
+          return p;
+        };
+        const q = l < .5 ? l * (1 + s) : l + s - l * s;
+        const p = 2 * l - q;
+        return {
+          r: Math.round(hue2rgb(p, q, h + 1 / 3) * 255),
+          g: Math.round(hue2rgb(p, q, h) * 255),
+          b: Math.round(hue2rgb(p, q, h - 1 / 3) * 255),
+        };
       }
 
-      function createCanvasTexture(size, draw, colorSpace = THREE.SRGBColorSpace) {
-        const canvas = document.createElement("canvas");
-        canvas.width = size;
-        canvas.height = size;
-        draw(canvas.getContext("2d"), size);
-        const texture = new THREE.CanvasTexture(canvas);
-        texture.colorSpace = colorSpace;
-        texture.wrapS = THREE.RepeatWrapping;
-        texture.wrapT = THREE.RepeatWrapping;
-        texture.anisotropy = textureAnisotropy;
-        texture.needsUpdate = true;
-        return texture;
+      function clamp(value, min, max) {
+        return Math.max(min, Math.min(max, value));
       }
 
-      function makeTintedTexture(sourceTexture, targetHex, mode) {
-        const source = sourceTexture && sourceTexture.image;
-        if (!source) return null;
+      function normalizedFrame(frame) {
+        return ((frame % FRAME_COUNT) + FRAME_COUNT) % FRAME_COUNT;
+      }
 
-        const key = `${sourceTexture.uuid}:${targetHex}:${mode}`;
-        if (textureCache.tinted.has(key)) return textureCache.tinted.get(key);
+      function clearFrameCache() {
+        frameCache.clear();
+      }
 
-        const width = source.width || 1024;
-        const height = source.height || 1024;
-        const canvas = document.createElement("canvas");
-        canvas.width = width;
-        canvas.height = height;
-        const ctx = canvas.getContext("2d", { willReadFrequently: true });
-        ctx.drawImage(source, 0, 0, width, height);
+      function nearestFrame(position) {
+        return normalizedFrame(Math.round(position));
+      }
 
-        const imageData = ctx.getImageData(0, 0, width, height);
-        const pixels = imageData.data;
-        const tint = hexToRgb(targetHex);
+      function layerToneRange(pixels) {
+        const histogram = new Array(256).fill(0);
+        let total = 0;
 
         for (let index = 0; index < pixels.length; index += 4) {
-          const r = pixels[index];
-          const g = pixels[index + 1];
-          const b = pixels[index + 2];
-          const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
-          const variation = mode === "teak" ? (luminance - 0.5) * 54 : (luminance - 0.5) * 34;
-          const textureWeight = mode === "teak" ? 0.18 : 0.26;
-
-          pixels[index] = clamp(tint.r + variation + (r - tint.r) * textureWeight);
-          pixels[index + 1] = clamp(tint.g + variation + (g - tint.g) * textureWeight);
-          pixels[index + 2] = clamp(tint.b + variation + (b - tint.b) * textureWeight);
+          if (pixels[index + 3] < 8) continue;
+          const luma = Math.round(
+            pixels[index] * .2126 +
+            pixels[index + 1] * .7152 +
+            pixels[index + 2] * .0722
+          );
+          histogram[luma] += 1;
+          total += 1;
         }
 
-        ctx.putImageData(imageData, 0, 0);
-        const texture = new THREE.CanvasTexture(canvas);
-        texture.colorSpace = THREE.SRGBColorSpace;
-        texture.wrapS = sourceTexture.wrapS;
-        texture.wrapT = sourceTexture.wrapT;
-        texture.repeat.copy(sourceTexture.repeat);
-        texture.offset.copy(sourceTexture.offset);
-        texture.center.copy(sourceTexture.center);
-        texture.rotation = sourceTexture.rotation;
-        texture.flipY = sourceTexture.flipY;
-        texture.anisotropy = textureAnisotropy;
-        texture.needsUpdate = true;
-        textureCache.tinted.set(key, texture);
-        return texture;
+        if (!total) return { low: 0, high: 255 };
+
+        let seen = 0;
+        let low = 0;
+        let high = 255;
+        const lowTarget = total * .03;
+        const highTarget = total * .985;
+
+        for (let value = 0; value < histogram.length; value += 1) {
+          seen += histogram[value];
+          if (seen >= lowTarget) {
+            low = value;
+            break;
+          }
+        }
+
+        seen = 0;
+        for (let value = 0; value < histogram.length; value += 1) {
+          seen += histogram[value];
+          if (seen >= highTarget) {
+            high = value;
+            break;
+          }
+        }
+
+        return { low, high: Math.max(high, low + 24) };
       }
 
-      function getTeakTexture(color) {
-        if (textureCache.teak.has(color)) return textureCache.teak.get(color);
-        const texture = createCanvasTexture(512, (ctx, size) => {
-          ctx.fillStyle = color;
-          ctx.fillRect(0, 0, size, size);
+      function shadeColor(targetRgb, shade, layer) {
+        const targetBrightness = (
+          targetRgb.r * .2126 +
+          targetRgb.g * .7152 +
+          targetRgb.b * .0722
+        ) / 255;
+        const lightColorBoost = clamp((targetBrightness - .66) / .34, 0, 1);
+        const profile = currentShade || {
+          hull: { shadow: .38, range: .64, lift: .03, specular: .17 },
+          cushions: { shadow: .48, range: .58, lift: .07, specular: .12 },
+          teak: { shadow: .44, range: .72, lift: .04, specular: .16 },
+        }[layer] || { shadow: .38, range: .72, lift: .06, specular: .16 };
 
-          for (let x = 0; x < size; x += 42) {
-            ctx.fillStyle = shade(color, (x / 42) % 2 ? -10 : 8);
-            ctx.fillRect(x, 0, 42, size);
-            ctx.fillStyle = "rgba(44, 32, 24, .55)";
-            ctx.fillRect(x, 0, 2, size);
-            ctx.fillStyle = "rgba(255, 255, 255, .25)";
-            ctx.fillRect(x + 3, 0, 1, size);
-          }
+        const shadow = profile.shadow + (layer === "hull" ? lightColorBoost * .22 : 0);
+        const range = profile.range - (layer === "hull" ? lightColorBoost * .12 : 0);
+        const lift = profile.lift + (layer === "hull" ? lightColorBoost * .12 : 0);
+        const brightness = shadow + Math.pow(shade, .82) * range;
+        const highlight = Math.pow(clamp((shade - .76) / .24, 0, 1), 2) * profile.specular;
+        let shaded = {
+          r: targetRgb.r * brightness + 255 * highlight + 255 * lift * (1 - shade),
+          g: targetRgb.g * brightness + 255 * highlight + 255 * lift * (1 - shade),
+          b: targetRgb.b * brightness + 255 * highlight + 255 * lift * (1 - shade),
+        };
 
-          for (let y = 5; y < size; y += 13) {
-            ctx.strokeStyle = "rgba(58, 43, 31, .17)";
-            ctx.lineWidth = 1;
-            ctx.beginPath();
-            ctx.moveTo(0, y);
-            for (let x = 0; x <= size; x += 32) {
-              ctx.lineTo(x, y + Math.sin((x + y) * 0.04) * 2);
-            }
-            ctx.stroke();
+        if (profile.saturation) {
+          const hsl = rgbToHsl(shaded.r, shaded.g, shaded.b);
+          shaded = hslToRgb(hsl.h, hsl.s * profile.saturation, hsl.l);
+        }
+
+        return {
+          r: Math.round(clamp(shaded.r, 0, 255)),
+          g: Math.round(clamp(shaded.g, 0, 255)),
+          b: Math.round(clamp(shaded.b, 0, 255)),
+        };
+      }
+
+      function selectedColor(role, color) {
+        return colors[role].find((item) => item.value === color) || null;
+      }
+
+      let currentShade = null;
+
+      function tintLayer(layer, color, frame, targetContext) {
+        layerContext.clearRect(0, 0, IMAGE_WIDTH, IMAGE_HEIGHT);
+        layerContext.drawImage(images[layer][frame], 0, 0);
+        const colorSpec = selectedColor(layer, color);
+        currentShade = colorSpec && colorSpec.shade ? colorSpec.shade : null;
+        const targetRgb = hexToRgb((colorSpec && colorSpec.render) || color);
+        const data = layerContext.getImageData(0, 0, IMAGE_WIDTH, IMAGE_HEIGHT);
+        const pixels = data.data;
+        const toneRange = layerToneRange(pixels);
+
+        for (let index = 0; index < pixels.length; index += 4) {
+          if (pixels[index + 3] < 8) continue;
+          const luma = (
+            pixels[index] * .2126 +
+            pixels[index + 1] * .7152 +
+            pixels[index + 2] * .0722
+          );
+          const shade = clamp((luma - toneRange.low) / (toneRange.high - toneRange.low), 0, 1);
+          const shaded = shadeColor(targetRgb, shade, layer);
+          pixels[index] = shaded.r;
+          pixels[index + 1] = shaded.g;
+          pixels[index + 2] = shaded.b;
+          if (layer === "hull") {
+            pixels[index + 3] = pixels[index + 3] > 22 ? 255 : Math.round(clamp(pixels[index + 3] * 5, 0, 255));
+          } else if (currentShade && typeof currentShade.alphaScale === "number") {
+            pixels[index + 3] = Math.round(clamp((currentShade.alphaBase || 0) + pixels[index + 3] * currentShade.alphaScale, 0, 255));
           }
+        }
+
+        layerContext.putImageData(data, 0, 0);
+        targetContext.drawImage(layerCanvas, 0, 0);
+        currentShade = null;
+      }
+
+      function frameCacheKey(frame) {
+        return [
+          frame,
+          state.hull || "original",
+          state.cushions || "original",
+          state.teak || "original",
+        ].join("|");
+      }
+
+      function compositeFrame(frame) {
+        const key = frameCacheKey(frame);
+        if (frameCache.has(key)) return frameCache.get(key);
+
+        const output = document.createElement("canvas");
+        output.width = IMAGE_WIDTH;
+        output.height = IMAGE_HEIGHT;
+        const outputContext = output.getContext("2d", { willReadFrequently: true });
+        const hull = selectedColor("hull", state.hull);
+        const hullRender = hull && images.hull && images.hull[hull.asset];
+        outputContext.drawImage(hullRender && hullRender[frame] ? hullRender[frame] : images.base[frame], 0, 0);
+        ["cushions", "teak"].forEach((layer) => {
+          const color = state[layer];
+          if (color) tintLayer(layer, color, frame, outputContext);
         });
-        texture.repeat.set(7, 3.6);
-        textureCache.teak.set(color, texture);
-        return texture;
+
+        if (frameCache.size > FRAME_COUNT * 2) frameCache.clear();
+        frameCache.set(key, output);
+        return output;
       }
 
-      function getTeakBumpTexture() {
-        const key = "bump";
-        if (textureCache.teak.has(key)) return textureCache.teak.get(key);
-        const texture = createCanvasTexture(512, (ctx, size) => {
-          ctx.fillStyle = "#808080";
-          ctx.fillRect(0, 0, size, size);
-          for (let x = 0; x < size; x += 42) {
-            ctx.fillStyle = "#4f4f4f";
-            ctx.fillRect(x, 0, 2, size);
-            ctx.fillStyle = "#9c9c9c";
-            ctx.fillRect(x + 3, 0, 1, size);
-          }
-          for (let y = 5; y < size; y += 13) {
-            ctx.strokeStyle = "#747474";
-            ctx.lineWidth = 1;
-            ctx.beginPath();
-            ctx.moveTo(0, y);
-            for (let x = 0; x <= size; x += 32) {
-              ctx.lineTo(x, y + Math.sin((x + y) * 0.04) * 2);
-            }
-            ctx.stroke();
-          }
-        }, THREE.NoColorSpace);
-        texture.repeat.set(7, 3.6);
-        textureCache.teak.set(key, texture);
-        return texture;
-      }
-
-      function getCushionTexture(color) {
-        if (textureCache.cushions.has(color)) return textureCache.cushions.get(color);
-        const texture = createCanvasTexture(512, (ctx, size) => {
-          ctx.fillStyle = color;
-          ctx.fillRect(0, 0, size, size);
-
-          ctx.lineWidth = 5;
-          for (let offset = -size; offset < size * 2; offset += 54) {
-            ctx.strokeStyle = "rgba(80, 55, 45, .24)";
-            ctx.beginPath();
-            ctx.moveTo(offset, 0);
-            ctx.lineTo(offset + size, size);
-            ctx.stroke();
-
-            ctx.strokeStyle = "rgba(255, 255, 255, .24)";
-            ctx.beginPath();
-            ctx.moveTo(offset + 5, 0);
-            ctx.lineTo(offset + size + 5, size);
-            ctx.stroke();
-
-            ctx.strokeStyle = "rgba(80, 55, 45, .22)";
-            ctx.beginPath();
-            ctx.moveTo(offset, size);
-            ctx.lineTo(offset + size, 0);
-            ctx.stroke();
-
-            ctx.strokeStyle = "rgba(255, 255, 255, .2)";
-            ctx.beginPath();
-            ctx.moveTo(offset + 5, size);
-            ctx.lineTo(offset + size + 5, 0);
-            ctx.stroke();
-          }
-
-          ctx.fillStyle = "rgba(255, 255, 255, .08)";
-          for (let y = 0; y < size; y += 54) {
-            for (let x = (y / 54) % 2 ? 27 : 0; x < size; x += 54) {
-              ctx.beginPath();
-              ctx.ellipse(x + 27, y + 27, 11, 7, Math.PI / 4, 0, Math.PI * 2);
-              ctx.fill();
-            }
-          }
-        });
-        texture.repeat.set(2.8, 2.8);
-        textureCache.cushions.set(color, texture);
-        return texture;
-      }
-
-      function getCushionBumpTexture() {
-        const key = "bump";
-        if (textureCache.cushions.has(key)) return textureCache.cushions.get(key);
-        const texture = createCanvasTexture(512, (ctx, size) => {
-          ctx.fillStyle = "#868686";
-          ctx.fillRect(0, 0, size, size);
-          ctx.lineWidth = 6;
-          for (let offset = -size; offset < size * 2; offset += 54) {
-            ctx.strokeStyle = "#555";
-            ctx.beginPath();
-            ctx.moveTo(offset, 0);
-            ctx.lineTo(offset + size, size);
-            ctx.stroke();
-            ctx.beginPath();
-            ctx.moveTo(offset, size);
-            ctx.lineTo(offset + size, 0);
-            ctx.stroke();
-            ctx.strokeStyle = "#aaa";
-            ctx.lineWidth = 2;
-            ctx.beginPath();
-            ctx.moveTo(offset + 5, 0);
-            ctx.lineTo(offset + size + 5, size);
-            ctx.stroke();
-            ctx.beginPath();
-            ctx.moveTo(offset + 5, size);
-            ctx.lineTo(offset + size + 5, 0);
-            ctx.stroke();
-            ctx.lineWidth = 6;
-          }
-        }, THREE.NoColorSpace);
-        texture.repeat.set(2.8, 2.8);
-        textureCache.cushions.set(key, texture);
-        return texture;
-      }
-
-      function applyMaterialStyle(material, style) {
-        material.color.set(style.color);
-        material.roughness = style.roughness;
-        material.metalness = style.metalness;
-        if (style.clearMaps) {
-          material.map = null;
-          material.normalMap = null;
-          material.roughnessMap = null;
-          material.metalnessMap = null;
-          material.bumpMap = null;
-        }
-        if (style.opacity) {
-          material.opacity = style.opacity;
-          material.transparent = true;
-          material.depthWrite = false;
-        }
-        material.needsUpdate = true;
-      }
-
-      function restoreOriginalMaps(material, role) {
-        const hasOriginalTexture = Boolean(material.userData.originalMap);
-        material.color.set(hasOriginalTexture && role === "teak" ? "#ffffff" : defaultColors[role]);
-        material.map = role === "cushions" ? null : material.userData.originalMap || null;
-        material.normalMap = material.userData.originalNormalMap || null;
-        material.roughnessMap = material.userData.originalRoughnessMap || null;
-        material.metalnessMap = material.userData.originalMetalnessMap || null;
-        material.bumpMap = null;
-        material.bumpScale = 0;
-      }
-
-      function applyRoleLook(material, role, color) {
-        const hasCustomColor = Boolean(color);
-        const selectedColor = color || defaultColors[role];
-        material.userData.role = role;
-
-        if (role === "teak") {
-          if (material.userData.originalMap) {
-            material.color.set(selectedColor);
-            material.map = material.userData.originalMap;
-            material.normalMap = material.userData.originalNormalMap || null;
-            material.roughnessMap = material.userData.originalRoughnessMap || null;
-            material.metalnessMap = material.userData.originalMetalnessMap || null;
-            material.bumpMap = null;
-            material.bumpScale = 0;
-          } else {
-            material.color.set("#ffffff");
-            material.map = getTeakTexture(selectedColor);
-            material.normalMap = null;
-            material.roughnessMap = null;
-            material.metalnessMap = null;
-            material.bumpMap = getTeakBumpTexture();
-            material.bumpScale = 0.025;
-          }
-          material.roughness = hasCustomColor ? 0.7 : 0.76;
-          material.metalness = 0;
-        } else if (role === "cushions") {
-          if (
-            material.userData.originalMap ||
-            material.userData.originalNormalMap ||
-            material.userData.originalRoughnessMap ||
-            material.userData.originalMetalnessMap
-          ) {
-            material.color.set(selectedColor);
-            material.map = null;
-            material.normalMap = material.userData.originalNormalMap || null;
-            material.roughnessMap = material.userData.originalRoughnessMap || null;
-            material.metalnessMap = material.userData.originalMetalnessMap || null;
-            material.bumpMap = null;
-            material.bumpScale = 0;
-          } else {
-            material.color.set("#ffffff");
-            material.map = getCushionTexture(selectedColor);
-            material.normalMap = null;
-            material.roughnessMap = null;
-            material.metalnessMap = null;
-            material.bumpMap = getCushionBumpTexture();
-            material.bumpScale = 0.018;
-          }
-          material.roughness = 0.86;
-          material.metalness = 0;
+      function draw(position = framePosition, force = false) {
+        if (!images.base) return;
+        const frame = nearestFrame(position);
+        if (!force && frame === renderedFrame) return;
+        context.clearRect(0, 0, IMAGE_WIDTH, IMAGE_HEIGHT);
+        const source = compositeFrame(frame);
+        if (isCompactViewport()) {
+          const scale = .86;
+          const drawWidth = IMAGE_WIDTH * scale;
+          const drawHeight = IMAGE_HEIGHT * scale;
+          const drawX = (IMAGE_WIDTH - drawWidth) / 2;
+          const drawY = (IMAGE_HEIGHT - drawHeight) / 2 + 6;
+          context.drawImage(source, drawX, drawY, drawWidth, drawHeight);
         } else {
-          material.color.set(selectedColor);
-          material.map = null;
-          material.bumpMap = null;
-          material.bumpScale = 0;
-          material.roughness = 0.32;
-          material.metalness = 0.38;
+          context.drawImage(source, 0, 0);
         }
-
-        if (material.map) material.map.needsUpdate = true;
-        if (material.bumpMap) material.bumpMap.needsUpdate = true;
-        material.needsUpdate = true;
+        currentFrame = frame;
+        renderedFrame = frame;
       }
 
-      function prepareMaterial(material) {
-        const role = materialRole(material.name);
-        material = material.clone();
-        material.envMapIntensity = 0.75;
-        material.userData.originalMap = material.map || null;
-        material.userData.originalNormalMap = material.normalMap || null;
-        material.userData.originalRoughnessMap = material.roughnessMap || null;
-        material.userData.originalMetalnessMap = material.metalnessMap || null;
+      function setFrame(frame) {
+        framePosition = normalizedFrame(frame);
+        currentFrame = nearestFrame(framePosition);
+        draw(framePosition, true);
+      }
 
-        if (role) {
-          applyRoleLook(material, role, null);
-          configurableMaterials[role].push(material);
-          return material;
+      function stopInertia() {
+        if (inertiaFrame) cancelAnimationFrame(inertiaFrame);
+        inertiaFrame = 0;
+      }
+
+      function runInertia() {
+        if (dragging) return;
+        frameVelocity *= INERTIA_FRICTION;
+        if (Math.abs(frameVelocity) < MIN_VELOCITY) {
+          framePosition = nearestFrame(framePosition);
+          draw(framePosition, true);
+          stopInertia();
+          return;
         }
-
-        const style = fixedMaterialStyles[material.name] || { color: "#d2d1c9", roughness: 0.54, metalness: 0 };
-        applyMaterialStyle(material, style);
-        return material;
-      }
-
-      function prepareMesh(mesh) {
-        mesh.castShadow = true;
-        mesh.receiveShadow = true;
-        if (Array.isArray(mesh.material)) {
-          mesh.material = mesh.material.map(prepareMaterial);
-        } else if (mesh.material) {
-          mesh.material = prepareMaterial(mesh.material);
-        }
-      }
-
-      function frameModel(model) {
-        const box = new THREE.Box3().setFromObject(model);
-        const center = box.getCenter(new THREE.Vector3());
-        model.position.sub(center);
-        model.rotation.y = -0.56;
-        model.rotation.x = -0.02;
-        model.scale.setScalar(isCompactViewport() ? 0.86 : 1);
-
-        model.updateMatrixWorld(true);
-        const rotatedCenter = new THREE.Box3().setFromObject(model).getCenter(new THREE.Vector3());
-        model.position.sub(rotatedCenter);
-        model.updateMatrixWorld(true);
-        const framedBox = new THREE.Box3().setFromObject(model);
-        const sphere = framedBox.getBoundingSphere(new THREE.Sphere());
-        modelRadius = sphere.radius;
-        modelCenter.copy(sphere.center);
-        camera.near = modelRadius / 100;
-        camera.far = modelRadius * 12;
-        positionCamera();
-      }
-
-      function positionCamera() {
-        if (!modelRadius) return;
-        const compact = isCompactViewport();
-        camera.fov = compact ? 46 : 35;
-        camera.updateProjectionMatrix();
-        const verticalFov = THREE.MathUtils.degToRad(camera.fov);
-        const horizontalFov = 2 * Math.atan(Math.tan(verticalFov / 2) * camera.aspect);
-        const fitFov = Math.min(verticalFov, horizontalFov);
-        const distance = (modelRadius / Math.sin(fitFov / 2)) * (compact ? 3 : 1.08);
-        const target = modelCenter.clone();
-        target.y += compact ? -0.12 : 0.6;
-        const direction = new THREE.Vector3(
-          compact ? -0.5 : -0.52,
-          compact ? 0.26 : 0.34,
-          compact ? 0.82 : 0.78
-        ).normalize();
-
-        controls.target.copy(target);
-        camera.position.copy(target).addScaledVector(direction, distance);
-        controls.minDistance = distance * 0.62;
-        controls.maxDistance = distance * 1.85;
-        controls.update();
-      }
-
-      function setRoleColor(role, value) {
-        configurableMaterials[role].forEach((material) => {
-          applyRoleLook(material, role, value);
-        });
+        framePosition = normalizedFrame(framePosition + frameVelocity * 16.67);
+        draw();
+        inertiaFrame = requestAnimationFrame(runInertia);
       }
 
       function renderPanels() {
@@ -1096,21 +868,31 @@
             button.style.setProperty("--swatch", color.value);
             button.setAttribute("aria-label", color.name);
             button.title = color.name;
-            button.addEventListener("click", () => {
+            button.addEventListener("click", async () => {
               state[role] = color.value;
-              setRoleColor(role, color.value);
               renderPanels();
+              if (role === "hull") {
+                loader.hidden = false;
+                loader.textContent = "Rompkleur wordt geladen...";
+                downloadButton.disabled = true;
+                await loadHullColor(color.asset).catch(() => {});
+                loader.hidden = true;
+                downloadButton.disabled = false;
+              }
+              clearFrameCache();
+              renderedFrame = -1;
+              draw(framePosition, true);
             });
-            if (state[role] === color.value) {
-              button.classList.add("selected");
-            }
+            if (state[role] === color.value) button.classList.add("selected");
             swatches.appendChild(button);
           });
 
           original.onclick = () => {
             state[role] = null;
-            setRoleColor(role, null);
+            clearFrameCache();
+            renderedFrame = -1;
             renderPanels();
+            draw();
           };
 
           const selected = colors[role].find((item) => item.value === state[role]);
@@ -1118,81 +900,152 @@
         });
       }
 
-      function resize() {
-        const width = stage.clientWidth;
-        const height = stage.clientHeight;
-        renderer.setSize(width, height, false);
-        camera.aspect = width / Math.max(height, 1);
-        camera.updateProjectionMatrix();
-        if (boatModel) {
-          boatModel.scale.setScalar(isCompactViewport() ? 0.86 : 1);
-          boatModel.updateMatrixWorld(true);
-          const sphere = new THREE.Box3().setFromObject(boatModel).getBoundingSphere(new THREE.Sphere());
-          modelRadius = sphere.radius;
-          modelCenter.copy(sphere.center);
-        }
-        positionCamera();
+      function eventClientX(event) {
+        if (event.touches && event.touches.length) return event.touches[0].clientX;
+        if (event.changedTouches && event.changedTouches.length) return event.changedTouches[0].clientX;
+        return event.clientX;
       }
 
-      function animate() {
-        requestAnimationFrame(animate);
-        controls.update();
-        renderer.render(scene, camera);
+      function startDrag(event) {
+        if (event.button && event.button !== 0) return;
+        if (event.cancelable) event.preventDefault();
+        const clientX = eventClientX(event);
+        if (typeof clientX !== "number") return;
+        stopInertia();
+        dragging = true;
+        stage.classList.add("dragging");
+        dragStartX = clientX;
+        dragStartFrame = framePosition;
+        lastDragX = clientX;
+        lastDragTime = performance.now();
+        frameVelocity = 0;
+        if (event.pointerId !== undefined && stage.setPointerCapture) {
+          stage.setPointerCapture(event.pointerId);
+        }
+      }
+
+      function moveDrag(event) {
+        if (!dragging) return;
+        if (event.cancelable) event.preventDefault();
+        const clientX = eventClientX(event);
+        if (typeof clientX !== "number") return;
+        const now = performance.now();
+        const elapsed = Math.max(now - lastDragTime, 1);
+        const deltaX = clientX - dragStartX;
+        const stepX = clientX - lastDragX;
+        framePosition = normalizedFrame(dragStartFrame - deltaX / PIXELS_PER_FRAME);
+        frameVelocity = -(stepX / PIXELS_PER_FRAME) / elapsed;
+        lastDragX = clientX;
+        lastDragTime = now;
+        draw();
+      }
+
+      function endDrag(event) {
+        if (!dragging) return;
+        dragging = false;
+        stage.classList.remove("dragging");
+        if (
+          event &&
+          event.pointerId !== undefined &&
+          stage.hasPointerCapture &&
+          stage.hasPointerCapture(event.pointerId)
+        ) {
+          stage.releasePointerCapture(event.pointerId);
+        }
+        if (Math.abs(frameVelocity) >= MIN_VELOCITY) {
+          stopInertia();
+          inertiaFrame = requestAnimationFrame(runInertia);
+        }
+      }
+
+      function bindDragControls() {
+        if (window.PointerEvent) {
+          stage.addEventListener("pointerdown", startDrag);
+          stage.addEventListener("pointermove", moveDrag);
+          stage.addEventListener("pointerup", endDrag);
+          stage.addEventListener("pointercancel", endDrag);
+          return;
+        }
+
+        stage.addEventListener("touchstart", startDrag, false);
+        window.addEventListener("touchmove", moveDrag, false);
+        window.addEventListener("touchend", endDrag, false);
+        window.addEventListener("touchcancel", endDrag, false);
+        stage.addEventListener("mousedown", startDrag, false);
+        window.addEventListener("mousemove", moveDrag, false);
+        window.addEventListener("mouseup", endDrag, false);
       }
 
       function reset() {
         state.hull = null;
         state.cushions = null;
         state.teak = null;
-        Object.keys(state).forEach((role) => setRoleColor(role, null));
-        positionCamera();
+        clearFrameCache();
+        renderedFrame = -1;
+        setFrame(0);
         renderPanels();
+        draw();
       }
 
       function downloadImage() {
-        renderer.render(scene, camera);
+        const savedPosition = framePosition;
+        setFrame(Math.round(framePosition));
         const link = document.createElement("a");
-        link.download = "mijn-dammer-3d-configuratie.png";
-        link.href = renderer.domElement.toDataURL("image/png");
+        link.download = "mijn-dammer-360-configuratie.png";
+        link.href = canvas.toDataURL("image/png");
         link.click();
+        framePosition = savedPosition;
+        draw(framePosition, true);
       }
 
-      renderPanels();
-      resize();
-      animate();
-      window.addEventListener("resize", resize);
+      function normalizeParam(value) {
+        return value ? value.trim().toLowerCase().replace(/\s+/g, "") : "";
+      }
+
+      function queryParam(name) {
+        const pattern = new RegExp("[?&]" + name.replace(/[[]]/g, "\\$&") + "=([^&#]*)");
+        const match = pattern.exec(window.location.search);
+        return match ? decodeURIComponent(match[1].replace(/\+/g, " ")) : "";
+      }
+
+      function applyUrlState() {
+        ["hull", "cushions", "teak"].forEach((role) => {
+          const wanted = normalizeParam(queryParam(role));
+          if (!wanted) return;
+          const match = colors[role].find((item) => (
+            normalizeParam(item.name) === wanted ||
+            normalizeParam(item.value) === wanted
+          ));
+          if (match) state[role] = match.value;
+        });
+
+        const frame = parseInt(queryParam("frame"), 10);
+        if (isFinite(frame)) setFrame(frame);
+      }
+
+      bindDragControls();
       resetButton.addEventListener("click", reset);
       downloadButton.addEventListener("click", downloadImage);
+      window.addEventListener("resize", () => draw(framePosition, true));
+      window.addEventListener("orientationchange", () => window.setTimeout(() => draw(framePosition, true), 250));
+      applyUrlState();
+      renderPanels();
 
-      const modelLoadTimer = window.setTimeout(() => {
-        fallbackTo360("3d-timeout");
-      }, compat.loadTimeoutMs || 30000);
-
-      new GLTFLoader().load(
-        modelUrl,
-        (gltf) => {
-          window.clearTimeout(modelLoadTimer);
-          const model = gltf.scene;
-          boatModel = model;
-          model.traverse((object) => {
-            if (object.isMesh) prepareMesh(object);
-          });
-          scene.add(model);
-          frameModel(model);
-          loader.remove();
-          downloadButton.disabled = false;
-        },
-        (event) => {
-          if (event.total) {
-            const progress = Math.round((event.loaded / event.total) * 100);
-            loader.textContent = `Dammer wordt geladen... ${progress}%`;
-          }
-        },
-        () => {
-          window.clearTimeout(modelLoadTimer);
-          fallbackTo360("3d-load-error");
+      loadFrames().then(async () => {
+        const hull = selectedColor("hull", state.hull);
+        if (hull) await loadHullColor(hull.asset).catch(() => {});
+        loader.hidden = true;
+        downloadButton.disabled = false;
+        draw();
+        if ("requestIdleCallback" in window) {
+          window.requestIdleCallback(warmHullRenders, { timeout: 3000 });
+        } else {
+          window.setTimeout(warmHullRenders, 1000);
         }
-      );
+      }).catch(() => {
+        loader.hidden = false;
+        loader.textContent = "Renders konden niet worden geladen.";
+      });
     </script>
   </body>
 </html>
