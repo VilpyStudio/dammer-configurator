@@ -8,6 +8,17 @@
     <meta http-equiv="Expires" content="0">
     <title>Dammer 3D Configurator</title>
     <meta name="description" content="Bekijk en configureer de Dammer in 3D.">
+    <script>
+      (function () {
+        var query = window.location.search ? window.location.search.slice(1) : "";
+        var isHomepage = window.location.pathname === "/" || /\/index\.html$/.test(window.location.pathname);
+        var hasVersion = /(^|&)v=/.test(query);
+        var keepsDebugFlag = /(^|&)force3d=1(&|$)/.test(query);
+        if (isHomepage && hasVersion && !keepsDebugFlag && window.history && window.history.replaceState) {
+          window.history.replaceState(null, "", window.location.protocol + "//" + window.location.host + "/");
+        }
+      })();
+    </script>
     <link rel="preload" href="images/dammer-boat-blender-v3-web.glb?v=20260825-2130" as="fetch" type="model/gltf-binary" media="(min-width: 701px)" crossorigin>
     <link rel="preload" href="images/dammer-boat-blender-v3-mobile.glb?v=20260825-2130" as="fetch" type="model/gltf-binary" media="(max-width: 700px)" crossorigin>
     <link rel="modulepreload" href="vendor/three/three.module.js?v=20260825-2130">
@@ -432,7 +443,7 @@
   <body>
     <main class="site-shell">
       <header class="topbar">
-        <a class="brand" href="index.html" aria-label="Dammer configurator">
+        <a class="brand" href="/" aria-label="Dammer configurator">
           <img src="images/dammer-logo.svg?v=20260825-2130" alt="Dammer 700">
         </a>
         <div class="topbar-actions">

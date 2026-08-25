@@ -5,11 +5,11 @@ DirectoryIndex index.html
 <IfModule mod_rewrite.c>
   RewriteEngine On
 
-  RewriteCond %{QUERY_STRING} !(^|&)v=20260825-2130(&|$)
-  RewriteRule ^$ /index.html?v=20260825-2130 [R=302,L,NE]
+  RewriteCond %{QUERY_STRING} !(^|&)v=20260825-2140(&|$)
+  RewriteRule ^$ /index.html?v=20260825-2140 [R=302,L,NE]
 
-  RewriteCond %{QUERY_STRING} !(^|&)v=20260825-2130(&|$)
-  RewriteRule ^index\.html$ /index.html?v=20260825-2130 [R=302,L,NE]
+  RewriteCond %{QUERY_STRING} !(^|&)v=20260825-2140(&|$)
+  RewriteRule ^index\.html$ /index.html?v=20260825-2140 [R=302,L,NE]
 </IfModule>
 
 <IfModule mod_headers.c>
