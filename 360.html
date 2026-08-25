@@ -366,7 +366,7 @@
         }
 
         .stage {
-          margin: 8px 0 -8px;
+          margin: 0 0 -8px;
           overflow: hidden;
         }
 
@@ -378,9 +378,11 @@
         }
 
         .viewer-note {
+          font-size: 8px;
           line-height: 1.35;
-          margin-top: -10px;
-          padding: 0 8px;
+          margin: -8px auto 0;
+          max-width: 260px;
+          padding: 0;
         }
 
         .controls {
@@ -504,6 +506,7 @@
       const resetButton = document.querySelector("[data-reset]");
       const images = {};
       const frameCache = new Map();
+      const hullLoadPromises = new Map();
       const PIXELS_PER_FRAME = 48;
       const INERTIA_FRICTION = .90;
       const MIN_VELOCITY = .002;
@@ -517,6 +520,10 @@
       let lastDragTime = 0;
       let frameVelocity = 0;
       let inertiaFrame = 0;
+
+      function isCompactViewport() {
+        return window.matchMedia("(max-width: 640px)").matches;
+      }
 
       function frameName(frame) {
         return frame < 10 ? "0" + frame : String(frame);
@@ -542,7 +549,7 @@
       async function loadFrames() {
         const layers = ["base", "cushions", "teak"];
         let loaded = 0;
-        const total = FRAME_COUNT * (layers.length + colors.hull.length);
+        const total = FRAME_COUNT * layers.length;
         await Promise.all(layers.map(async (layer) => {
           images[layer] = [];
           for (let frame = 0; frame < FRAME_COUNT; frame += 1) {
@@ -553,14 +560,36 @@
         }));
 
         images.hull = {};
-        await Promise.all(colors.hull.map(async (color) => {
-          images.hull[color.asset] = [];
+      }
+
+      function loadHullColor(asset) {
+        if (images.hull && images.hull[asset] && images.hull[asset].filter(Boolean).length === FRAME_COUNT) {
+          return Promise.resolve();
+        }
+        if (hullLoadPromises.has(asset)) return hullLoadPromises.get(asset);
+
+        const promise = (async () => {
+          if (!images.hull) images.hull = {};
+          const frames = images.hull[asset] || [];
+          images.hull[asset] = frames;
           for (let frame = 0; frame < FRAME_COUNT; frame += 1) {
-            images.hull[color.asset][frame] = await loadImage(hullImagePath(color.asset, frame));
-            loaded += 1;
-            loader.textContent = `Dammer renders worden geladen... ${Math.round((loaded / total) * 100)}%`;
+            if (!frames[frame]) frames[frame] = await loadImage(hullImagePath(asset, frame));
           }
-        }));
+        })();
+        hullLoadPromises.set(asset, promise);
+        return promise;
+      }
+
+      function warmHullRenders() {
+        colors.hull.reduce((queue, color) => (
+          queue.then(() => loadHullColor(color.asset).then(() => {
+            const selectedHull = selectedColor("hull", state.hull);
+            if (selectedHull && selectedHull.asset === color.asset) {
+              clearFrameCache();
+              draw(framePosition, true);
+            }
+          }).catch(() => {}))
+        ), Promise.resolve());
       }
 
       function hexToRgb(hex) {
@@ -768,7 +797,7 @@
         const outputContext = output.getContext("2d", { willReadFrequently: true });
         const hull = selectedColor("hull", state.hull);
         const hullRender = hull && images.hull && images.hull[hull.asset];
-        outputContext.drawImage(hullRender ? hullRender[frame] : images.base[frame], 0, 0);
+        outputContext.drawImage(hullRender && hullRender[frame] ? hullRender[frame] : images.base[frame], 0, 0);
         ["cushions", "teak"].forEach((layer) => {
           const color = state[layer];
           if (color) tintLayer(layer, color, frame, outputContext);
@@ -784,7 +813,17 @@
         const frame = nearestFrame(position);
         if (!force && frame === renderedFrame) return;
         context.clearRect(0, 0, IMAGE_WIDTH, IMAGE_HEIGHT);
-        context.drawImage(compositeFrame(frame), 0, 0);
+        const source = compositeFrame(frame);
+        if (isCompactViewport()) {
+          const scale = .86;
+          const drawWidth = IMAGE_WIDTH * scale;
+          const drawHeight = IMAGE_HEIGHT * scale;
+          const drawX = (IMAGE_WIDTH - drawWidth) / 2;
+          const drawY = (IMAGE_HEIGHT - drawHeight) / 2 + 6;
+          context.drawImage(source, drawX, drawY, drawWidth, drawHeight);
+        } else {
+          context.drawImage(source, 0, 0);
+        }
         currentFrame = frame;
         renderedFrame = frame;
       }
@@ -829,12 +868,20 @@
             button.style.setProperty("--swatch", color.value);
             button.setAttribute("aria-label", color.name);
             button.title = color.name;
-            button.addEventListener("click", () => {
+            button.addEventListener("click", async () => {
               state[role] = color.value;
+              renderPanels();
+              if (role === "hull") {
+                loader.hidden = false;
+                loader.textContent = "Rompkleur wordt geladen...";
+                downloadButton.disabled = true;
+                await loadHullColor(color.asset).catch(() => {});
+                loader.hidden = true;
+                downloadButton.disabled = false;
+              }
               clearFrameCache();
               renderedFrame = -1;
-              renderPanels();
-              draw();
+              draw(framePosition, true);
             });
             if (state[role] === color.value) button.classList.add("selected");
             swatches.appendChild(button);
@@ -979,14 +1026,24 @@
       bindDragControls();
       resetButton.addEventListener("click", reset);
       downloadButton.addEventListener("click", downloadImage);
+      window.addEventListener("resize", () => draw(framePosition, true));
+      window.addEventListener("orientationchange", () => window.setTimeout(() => draw(framePosition, true), 250));
       applyUrlState();
       renderPanels();
 
-      loadFrames().then(() => {
-        loader.remove();
+      loadFrames().then(async () => {
+        const hull = selectedColor("hull", state.hull);
+        if (hull) await loadHullColor(hull.asset).catch(() => {});
+        loader.hidden = true;
         downloadButton.disabled = false;
         draw();
+        if ("requestIdleCallback" in window) {
+          window.requestIdleCallback(warmHullRenders, { timeout: 3000 });
+        } else {
+          window.setTimeout(warmHullRenders, 1000);
+        }
       }).catch(() => {
+        loader.hidden = false;
         loader.textContent = "Renders konden niet worden geladen.";
       });
     </script>

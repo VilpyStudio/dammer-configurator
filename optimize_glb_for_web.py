@@ -12,8 +12,8 @@ SOURCE_GLB = Path(sys.argv[1]) if len(sys.argv) > 1 else ROOT / "images" / "damm
 OUT_GLB = Path(sys.argv[2]) if len(sys.argv) > 2 else ROOT / "images" / "dammer-boat-blender-v3-web.glb"
 OUT_REPORT = Path(sys.argv[3]) if len(sys.argv) > 3 else ROOT / "web-glb-optimization-report.json"
 
-MAX_TEXTURE_SIZE = 2048
-JPEG_QUALITY = 82
+MAX_TEXTURE_SIZE = int(sys.argv[4]) if len(sys.argv) > 4 else 2048
+JPEG_QUALITY = int(sys.argv[5]) if len(sys.argv) > 5 else 82
 
 
 def read_glb(path):
@@ -175,6 +175,8 @@ def main():
         "source_bytes": SOURCE_GLB.stat().st_size,
         "output_bytes": OUT_GLB.stat().st_size,
         "saved_bytes": SOURCE_GLB.stat().st_size - OUT_GLB.stat().st_size,
+        "max_texture_size": MAX_TEXTURE_SIZE,
+        "jpeg_quality": JPEG_QUALITY,
         "images": report,
     }, indent=2), encoding="utf-8")
 

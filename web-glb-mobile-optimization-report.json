@@ -1,0 +1,483 @@
+{
+  "source": "images/dammer-boat-blender-v3.glb",
+  "output": "images/dammer-boat-blender-v3-mobile.glb",
+  "source_bytes": 69107176,
+  "output_bytes": 14763188,
+  "saved_bytes": 54343988,
+  "max_texture_size": 1024,
+  "jpeg_quality": 78,
+  "images": [
+    {
+      "image": "woodplank_19_normal",
+      "action": "jpeg-optimized",
+      "before_bytes": 511083,
+      "after_bytes": 32459,
+      "before_size": [
+        2048,
+        2048
+      ],
+      "after_size": [
+        1024,
+        1024
+      ]
+    },
+    {
+      "image": "woodplank_19_basecolor",
+      "action": "jpeg-optimized",
+      "before_bytes": 1153308,
+      "after_bytes": 142222,
+      "before_size": [
+        2048,
+        2048
+      ],
+      "after_size": [
+        1024,
+        1024
+      ]
+    },
+    {
+      "image": "woodplank_19_roughness",
+      "action": "jpeg-optimized",
+      "before_bytes": 1988590,
+      "after_bytes": 28842,
+      "before_size": [
+        2048,
+        2048
+      ],
+      "after_size": [
+        1024,
+        1024
+      ]
+    },
+    {
+      "image": "wood02_specular",
+      "action": "placeholder-unused",
+      "before_bytes": 49731,
+      "after_bytes": 285
+    },
+    {
+      "image": "wood02_normal_opengl",
+      "action": "jpeg-optimized",
+      "before_bytes": 805735,
+      "after_bytes": 73509,
+      "before_size": [
+        2048,
+        2048
+      ],
+      "after_size": [
+        1024,
+        1024
+      ]
+    },
+    {
+      "image": "wood02_basecolor_diffuse",
+      "action": "jpeg-optimized",
+      "before_bytes": 666870,
+      "after_bytes": 72766,
+      "before_size": [
+        2048,
+        2048
+      ],
+      "after_size": [
+        1024,
+        1024
+      ]
+    },
+    {
+      "image": "wood02_glossiness",
+      "action": "jpeg-optimized",
+      "before_bytes": 3070728,
+      "after_bytes": 137534,
+      "before_size": [
+        2048,
+        2048
+      ],
+      "after_size": [
+        1024,
+        1024
+      ]
+    },
+    {
+      "image": "plastic06_specular",
+      "action": "placeholder-unused",
+      "before_bytes": 66177,
+      "after_bytes": 285
+    },
+    {
+      "image": "plastic06_normal_opengl",
+      "action": "jpeg-optimized",
+      "before_bytes": 153991,
+      "after_bytes": 6767,
+      "before_size": [
+        2048,
+        2048
+      ],
+      "after_size": [
+        1024,
+        1024
+      ]
+    },
+    {
+      "image": "plastic06_diffuse",
+      "action": "jpeg-optimized",
+      "before_bytes": 731000,
+      "after_bytes": 27303,
+      "before_size": [
+        2048,
+        2048
+      ],
+      "after_size": [
+        1024,
+        1024
+      ]
+    },
+    {
+      "image": "plastic06_roughness",
+      "action": "jpeg-optimized",
+      "before_bytes": 3921213,
+      "after_bytes": 15660,
+      "before_size": [
+        2048,
+        2048
+      ],
+      "after_size": [
+        1024,
+        1024
+      ]
+    },
+    {
+      "image": "plane_divided_DefaultMaterial_Normal",
+      "action": "jpeg-optimized",
+      "before_bytes": 935463,
+      "after_bytes": 22559,
+      "before_size": [
+        2048,
+        2048
+      ],
+      "after_size": [
+        1024,
+        1024
+      ]
+    },
+    {
+      "image": "plane_divided_DefaultMaterial_BaseColor",
+      "action": "placeholder-unused",
+      "before_bytes": 623503,
+      "after_bytes": 285
+    },
+    {
+      "image": "plane_divided_DefaultMaterial_Roughness",
+      "action": "jpeg-optimized",
+      "before_bytes": 3963868,
+      "after_bytes": 106955,
+      "before_size": [
+        2048,
+        2048
+      ],
+      "after_size": [
+        1024,
+        1024
+      ]
+    },
+    {
+      "image": "Leather Used Red Diamon Quilted_Normal",
+      "action": "jpeg-optimized",
+      "before_bytes": 7315584,
+      "after_bytes": 179422,
+      "before_size": [
+        2048,
+        2048
+      ],
+      "after_size": [
+        1024,
+        1024
+      ]
+    },
+    {
+      "image": "Leather Used Red Diamon Quilted_Metallic-Leather Used Red Diamon Quilted_Roughness",
+      "action": "jpeg-optimized",
+      "before_bytes": 5587067,
+      "after_bytes": 231372,
+      "before_size": [
+        2048,
+        2048
+      ],
+      "after_size": [
+        1024,
+        1024
+      ]
+    },
+    {
+      "image": "main_boat_BODY_Normal",
+      "action": "jpeg-optimized",
+      "before_bytes": 36074,
+      "after_bytes": 9784,
+      "before_size": [
+        1024,
+        1024
+      ],
+      "after_size": [
+        1024,
+        1024
+      ]
+    },
+    {
+      "image": "main_boat_BODY_BaseColor",
+      "action": "jpeg-optimized",
+      "before_bytes": 59494,
+      "after_bytes": 50305,
+      "before_size": [
+        1024,
+        1024
+      ],
+      "after_size": [
+        1024,
+        1024
+      ]
+    },
+    {
+      "image": "main_boat_BODY_Metallic.png-main_boat_BODY_Roughness.png",
+      "action": "jpeg-optimized",
+      "before_bytes": 75315,
+      "after_bytes": 34664,
+      "before_size": [
+        1024,
+        1024
+      ],
+      "after_size": [
+        1024,
+        1024
+      ]
+    },
+    {
+      "image": "Stainless steel_NormalGL",
+      "action": "jpeg-optimized",
+      "before_bytes": 67562,
+      "after_bytes": 6703,
+      "before_size": [
+        2048,
+        2048
+      ],
+      "after_size": [
+        1024,
+        1024
+      ]
+    },
+    {
+      "image": "Stainless steel_Metalness-Stainless steel_Roughness (1)",
+      "action": "jpeg-optimized",
+      "before_bytes": 1721648,
+      "after_bytes": 8641,
+      "before_size": [
+        2048,
+        2048
+      ],
+      "after_size": [
+        1024,
+        1024
+      ]
+    },
+    {
+      "image": "metal09_specular",
+      "action": "placeholder-unused",
+      "before_bytes": 742922,
+      "after_bytes": 285
+    },
+    {
+      "image": "metal09_normal_opengl",
+      "action": "jpeg-optimized",
+      "before_bytes": 339514,
+      "after_bytes": 15954,
+      "before_size": [
+        2048,
+        2048
+      ],
+      "after_size": [
+        1024,
+        1024
+      ]
+    },
+    {
+      "image": "metal09_diffuse",
+      "action": "jpeg-optimized",
+      "before_bytes": 460954,
+      "after_bytes": 22008,
+      "before_size": [
+        2048,
+        2048
+      ],
+      "after_size": [
+        1024,
+        1024
+      ]
+    },
+    {
+      "image": "metal09_metallic-metal09_roughness",
+      "action": "jpeg-optimized",
+      "before_bytes": 5920652,
+      "after_bytes": 38230,
+      "before_size": [
+        2048,
+        2048
+      ],
+      "after_size": [
+        1024,
+        1024
+      ]
+    },
+    {
+      "image": "plastic15_normal_opengl",
+      "action": "jpeg-optimized",
+      "before_bytes": 1434603,
+      "after_bytes": 90334,
+      "before_size": [
+        2048,
+        2048
+      ],
+      "after_size": [
+        1024,
+        1024
+      ]
+    },
+    {
+      "image": "plastic15_diffuse",
+      "action": "jpeg-optimized",
+      "before_bytes": 470250,
+      "after_bytes": 47583,
+      "before_size": [
+        2048,
+        2048
+      ],
+      "after_size": [
+        1024,
+        1024
+      ]
+    },
+    {
+      "image": "plastic15_glossiness",
+      "action": "jpeg-optimized",
+      "before_bytes": 4527387,
+      "after_bytes": 108650,
+      "before_size": [
+        2048,
+        2048
+      ],
+      "after_size": [
+        1024,
+        1024
+      ]
+    },
+    {
+      "image": "wood04_normal_opengl",
+      "action": "jpeg-optimized",
+      "before_bytes": 367417,
+      "after_bytes": 17807,
+      "before_size": [
+        2048,
+        2048
+      ],
+      "after_size": [
+        1024,
+        1024
+      ]
+    },
+    {
+      "image": "wood04_diffuse",
+      "action": "jpeg-optimized",
+      "before_bytes": 1168044,
+      "after_bytes": 161459,
+      "before_size": [
+        2048,
+        2048
+      ],
+      "after_size": [
+        1024,
+        1024
+      ]
+    },
+    {
+      "image": "wood04_roughness",
+      "action": "jpeg-optimized",
+      "before_bytes": 2386970,
+      "after_bytes": 52643,
+      "before_size": [
+        2048,
+        2048
+      ],
+      "after_size": [
+        1024,
+        1024
+      ]
+    },
+    {
+      "image": "wood03_normal_opengl",
+      "action": "jpeg-optimized",
+      "before_bytes": 1064997,
+      "after_bytes": 68489,
+      "before_size": [
+        2048,
+        2048
+      ],
+      "after_size": [
+        1024,
+        1024
+      ]
+    },
+    {
+      "image": "wood03_diffuse",
+      "action": "jpeg-optimized",
+      "before_bytes": 709414,
+      "after_bytes": 61660,
+      "before_size": [
+        2048,
+        2048
+      ],
+      "after_size": [
+        1024,
+        1024
+      ]
+    },
+    {
+      "image": "wood03_roughness",
+      "action": "jpeg-optimized",
+      "before_bytes": 3151811,
+      "after_bytes": 34270,
+      "before_size": [
+        2048,
+        2048
+      ],
+      "after_size": [
+        1024,
+        1024
+      ]
+    },
+    {
+      "image": "Material.001_baseColor",
+      "action": "jpeg-optimized",
+      "before_bytes": 5916,
+      "after_bytes": 4742,
+      "before_size": [
+        128,
+        128
+      ],
+      "after_size": [
+        128,
+        128
+      ]
+    },
+    {
+      "image": "Material.003_baseColor",
+      "action": "jpeg-optimized",
+      "before_bytes": 5985,
+      "after_bytes": 4811,
+      "before_size": [
+        128,
+        128
+      ],
+      "after_size": [
+        128,
+        128
+      ]
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+AddType model/gltf-binary .glb
+
+<IfModule mod_headers.c>
+  <FilesMatch "\.(glb|png|svg|js|css)$">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+  </FilesMatch>
+
+  <FilesMatch "\.(html)$">
+    Header set Cache-Control "no-cache"
+  </FilesMatch>
+</IfModule>
