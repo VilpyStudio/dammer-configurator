@@ -333,16 +333,23 @@
 
       @media (max-width: 540px) {
         .topbar {
+          gap: 12px;
           height: 64px;
           padding: 0 14px;
         }
 
+        .brand {
+          min-width: 0;
+        }
+
         .brand img {
-          max-width: 150px;
+          max-width: 142px;
         }
 
         .topbar-actions {
+          flex: 0 0 auto;
           gap: 10px;
+          min-width: 0;
         }
 
         .flat-link {
@@ -351,7 +358,10 @@
 
         .reset-button,
         .flat-link {
-          font-size: 11px;
+          font-size: 10px;
+          max-width: 52px;
+          overflow: hidden;
+          text-overflow: ellipsis;
           white-space: nowrap;
         }
 
@@ -390,6 +400,20 @@
         .controls {
           padding: 34px 22px 42px;
         }
+
+        .swatches {
+          gap: 8px;
+        }
+
+        .swatch {
+          height: 34px;
+          width: 34px;
+        }
+
+        .swatch.selected::after {
+          left: 11px;
+          top: 8px;
+        }
       }
 
       @media (prefers-reduced-motion: reduce) {
@@ -409,7 +433,7 @@
           <img src="images/dammer-logo.svg" alt="Dammer 700">
         </a>
         <div class="topbar-actions">
-          <button class="reset-button" type="button" data-reset>Opnieuw instellen</button>
+          <button class="reset-button" type="button" data-reset aria-label="Opnieuw instellen">Reset</button>
         </div>
       </header>
 
@@ -1053,11 +1077,12 @@
         if (!modelRadius) return;
         const compact = isCompactViewport();
         camera.fov = compact ? 46 : 35;
+        camera.zoom = compact ? 1.45 : 1.18;
         camera.updateProjectionMatrix();
         const verticalFov = THREE.MathUtils.degToRad(camera.fov);
         const horizontalFov = 2 * Math.atan(Math.tan(verticalFov / 2) * camera.aspect);
         const fitFov = Math.min(verticalFov, horizontalFov);
-        const distance = (modelRadius / Math.sin(fitFov / 2)) * (compact ? 1.05 : 0.58);
+        const distance = (modelRadius / Math.sin(fitFov / 2)) * (compact ? 0.78 : 0.58);
         const target = modelCenter.clone();
         target.y += compact ? -0.12 : 0.6;
         const direction = new THREE.Vector3(
