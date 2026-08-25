@@ -502,11 +502,6 @@
         var androidVersion = androidMatch ? parseFloat(androidMatch[1]) : null;
         var isAndroid = /Android/i.test(userAgent);
         var supportsModules = "noModule" in document.createElement("script");
-        var supportsImportMap = !!(
-          window.HTMLScriptElement &&
-          HTMLScriptElement.supports &&
-          HTMLScriptElement.supports("importmap")
-        );
 
         function supportsWebGL() {
           try {
@@ -523,10 +518,7 @@
         var lowMemoryAndroid = isAndroid && navigator.deviceMemory && navigator.deviceMemory <= 2;
         var fallbackReason = "";
         if (!supportsModules) fallbackReason = "nomodule";
-        else if (!supportsImportMap) fallbackReason = "no-importmap";
         else if (!supportsWebGL()) fallbackReason = "no-webgl";
-        else if (androidVersion && androidVersion < 8) fallbackReason = "legacy-android";
-        else if (lowMemoryAndroid) fallbackReason = "low-memory-android";
 
         window.__dammer3dCompat = {
           force3d: force3d,
@@ -538,25 +530,17 @@
         };
 
         if (fallbackReason && !force3d) {
-          window.location.replace("360.html?fallback=" + encodeURIComponent(fallbackReason));
+          document.documentElement.dataset.dammer3dFallback = fallbackReason;
         }
       })();
     </script>
     <script nomodule>
-      window.location.replace("360.html?fallback=nomodule");
-    </script>
-    <script type="importmap">
-      {
-        "imports": {
-          "three": "./vendor/three/three.module.js",
-          "three/addons/": "./vendor/three/addons/"
-        }
-      }
+      document.documentElement.dataset.dammer3dFallback = "nomodule";
     </script>
     <script type="module">
-      import * as THREE from "three";
-      import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-      import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
+      import * as THREE from "./vendor/three/three.module.js";
+      import { OrbitControls } from "./vendor/three/addons/controls/OrbitControls.js";
+      import { GLTFLoader } from "./vendor/three/addons/loaders/GLTFLoader.js";
 
       const compat = window.__dammer3dCompat || {};
       const isCompactViewport = () => window.matchMedia("(max-width: 700px)").matches;
@@ -693,11 +677,8 @@
       });
 
       function fallbackTo360(reason) {
-        if (compat.force3d) {
-          loader.textContent = "3D model kon niet stabiel worden geladen.";
-          return;
-        }
-        window.location.replace(`360.html?fallback=${encodeURIComponent(reason)}`);
+        loader.textContent = `3D model kon niet worden geladen (${reason}).`;
+        downloadButton.disabled = true;
       }
 
       function materialRole(name) {
@@ -1077,12 +1058,12 @@
         if (!modelRadius) return;
         const compact = isCompactViewport();
         camera.fov = compact ? 46 : 35;
-        camera.zoom = compact ? 1.45 : 1.18;
+        camera.zoom = compact ? 1 : 1.18;
         camera.updateProjectionMatrix();
         const verticalFov = THREE.MathUtils.degToRad(camera.fov);
         const horizontalFov = 2 * Math.atan(Math.tan(verticalFov / 2) * camera.aspect);
         const fitFov = Math.min(verticalFov, horizontalFov);
-        const distance = (modelRadius / Math.sin(fitFov / 2)) * (compact ? 0.78 : 0.58);
+        const distance = (modelRadius / Math.sin(fitFov / 2)) * (compact ? 1.12 : 0.58);
         const target = modelCenter.clone();
         target.y += compact ? -0.12 : 0.6;
         const direction = new THREE.Vector3(
