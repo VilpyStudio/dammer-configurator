@@ -8,11 +8,11 @@
     <meta http-equiv="Expires" content="0">
     <title>Dammer 3D Configurator</title>
     <meta name="description" content="Bekijk en configureer de Dammer in 3D.">
-    <link rel="preload" href="images/dammer-boat-blender-v3-web.glb?v=20260825-2120" as="fetch" type="model/gltf-binary" media="(min-width: 701px)" crossorigin>
-    <link rel="preload" href="images/dammer-boat-blender-v3-mobile.glb?v=20260825-2120" as="fetch" type="model/gltf-binary" media="(max-width: 700px)" crossorigin>
-    <link rel="modulepreload" href="vendor/three/three.module.js?v=20260825-2120">
-    <link rel="modulepreload" href="vendor/three/addons/controls/OrbitControls.js?v=20260825-2120">
-    <link rel="modulepreload" href="vendor/three/addons/loaders/GLTFLoader.js?v=20260825-2120">
+    <link rel="preload" href="images/dammer-boat-blender-v3-web.glb?v=20260825-2130" as="fetch" type="model/gltf-binary" media="(min-width: 701px)" crossorigin>
+    <link rel="preload" href="images/dammer-boat-blender-v3-mobile.glb?v=20260825-2130" as="fetch" type="model/gltf-binary" media="(max-width: 700px)" crossorigin>
+    <link rel="modulepreload" href="vendor/three/three.module.js?v=20260825-2130">
+    <link rel="modulepreload" href="vendor/three/addons/controls/OrbitControls.js?v=20260825-2130">
+    <link rel="modulepreload" href="vendor/three/addons/loaders/GLTFLoader.js?v=20260825-2130">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&display=swap" rel="stylesheet">
@@ -433,7 +433,7 @@
     <main class="site-shell">
       <header class="topbar">
         <a class="brand" href="index.html" aria-label="Dammer configurator">
-          <img src="images/dammer-logo.svg?v=20260825-2120" alt="Dammer 700">
+          <img src="images/dammer-logo.svg?v=20260825-2130" alt="Dammer 700">
         </a>
         <div class="topbar-actions">
           <button class="reset-button" type="button" data-reset aria-label="Opnieuw instellen">Reset</button>
@@ -541,15 +541,15 @@
       document.documentElement.dataset.dammer3dFallback = "nomodule";
     </script>
     <script type="module">
-      import * as THREE from "./vendor/three/three.module.js?v=20260825-2120";
-      import { OrbitControls } from "./vendor/three/addons/controls/OrbitControls.js?v=20260825-2120";
-      import { GLTFLoader } from "./vendor/three/addons/loaders/GLTFLoader.js?v=20260825-2120";
+      import * as THREE from "./vendor/three/three.module.js?v=20260825-2130";
+      import { OrbitControls } from "./vendor/three/addons/controls/OrbitControls.js?v=20260825-2130";
+      import { GLTFLoader } from "./vendor/three/addons/loaders/GLTFLoader.js?v=20260825-2130";
 
       const compat = window.__dammer3dCompat || {};
       const isCompactViewport = () => window.matchMedia("(max-width: 700px)").matches;
       const modelUrl = isCompactViewport()
-        ? "images/dammer-boat-blender-v3-mobile.glb?v=20260825-2120"
-        : "images/dammer-boat-blender-v3-web.glb?v=20260825-2120";
+        ? "images/dammer-boat-blender-v3-mobile.glb?v=20260825-2130"
+        : "images/dammer-boat-blender-v3-web.glb?v=20260825-2130";
 
       const colors = {
         hull: [
@@ -1042,7 +1042,7 @@
         model.position.sub(center);
         model.rotation.y = -0.56;
         model.rotation.x = -0.02;
-        model.scale.setScalar(isCompactViewport() ? 0.86 : 1);
+        model.scale.setScalar(isCompactViewport() ? 0.96 : 1);
 
         model.updateMatrixWorld(true);
         const rotatedCenter = new THREE.Box3().setFromObject(model).getCenter(new THREE.Vector3());
@@ -1061,12 +1061,12 @@
         if (!modelRadius) return;
         const compact = isCompactViewport();
         camera.fov = compact ? 46 : 35;
-        camera.zoom = compact ? 1 : 1.18;
+        camera.zoom = compact ? 1.08 : 1.18;
         camera.updateProjectionMatrix();
         const verticalFov = THREE.MathUtils.degToRad(camera.fov);
         const horizontalFov = 2 * Math.atan(Math.tan(verticalFov / 2) * camera.aspect);
         const fitFov = Math.min(verticalFov, horizontalFov);
-        const distance = (modelRadius / Math.sin(fitFov / 2)) * (compact ? 1.12 : 0.58);
+        const distance = (modelRadius / Math.sin(fitFov / 2)) * (compact ? 0.88 : 0.58);
         const target = modelCenter.clone();
         target.y += compact ? -0.12 : 0.6;
         const direction = new THREE.Vector3(
@@ -1132,7 +1132,7 @@
         camera.aspect = width / Math.max(height, 1);
         camera.updateProjectionMatrix();
         if (boatModel) {
-          boatModel.scale.setScalar(isCompactViewport() ? 0.86 : 1);
+          boatModel.scale.setScalar(isCompactViewport() ? 0.96 : 1);
           boatModel.updateMatrixWorld(true);
           const sphere = new THREE.Box3().setFromObject(boatModel).getBoundingSphere(new THREE.Sphere());
           modelRadius = sphere.radius;
