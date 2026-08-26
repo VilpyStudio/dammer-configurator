@@ -5,6 +5,10 @@ DirectoryIndex index.html
 <IfModule mod_rewrite.c>
   RewriteEngine On
 
+  RewriteRule ^beurs/?$ /beurs.html [L]
+
+  RewriteRule ^beurs\.html$ /beurs [R=302,L,NE]
+
   RewriteCond %{QUERY_STRING} !(^|&)v=20260825-2140(&|$)
   RewriteRule ^$ /index.html?v=20260825-2140 [R=302,L,NE]
 
