@@ -359,18 +359,26 @@
         text-transform: uppercase;
       }
 
-      .partner-item img {
+      .partner-logo {
+        display: block;
+        height: 118px;
+        line-height: 118px;
+        white-space: nowrap;
+      }
+
+      .partner-logo img {
         display: inline-block;
         height: auto;
+        vertical-align: middle;
         width: auto;
       }
 
       .partner-item.uludag img {
-        width: 174px;
+        width: 182px;
       }
 
       .partner-item.deqx img {
-        width: 228px;
+        width: 243px;
       }
 
       .partner-item.sika img {
@@ -498,6 +506,11 @@
           margin-bottom: 10px;
         }
 
+        .partner-logo {
+          height: 72px;
+          line-height: 72px;
+        }
+
         .partner-item.uludag img {
           width: 96px;
         }
@@ -544,15 +557,15 @@
           <div class="partner-strip" aria-label="Materiaalpartners">
             <div class="partner-item uludag">
               <span class="partner-title">Kussens</span>
-              <img src="images/partner-uludag.png?v=1" alt="Uludag Vinyl">
+              <span class="partner-logo"><img src="images/partner-uludag.png?v=1" alt="Uludag Vinyl"></span>
             </div>
             <div class="partner-item deqx">
               <span class="partner-title">Teakdeck</span>
-              <img src="images/partner-deqx.png?v=1" alt="DEQX engineered deck system">
+              <span class="partner-logo"><img src="images/partner-deqx.png?v=1" alt="DEQX engineered deck system"></span>
             </div>
             <div class="partner-item sika">
               <span class="partner-title">Verlijming</span>
-              <img src="images/partner-sika.svg?v=1" alt="Sika">
+              <span class="partner-logo"><img src="images/partner-sika.svg?v=1" alt="Sika"></span>
             </div>
           </div>
           <p class="viewer-note">Kleuren op het scherm kunnen afwijken van de werkelijke materialen.</p>
