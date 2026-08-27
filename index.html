@@ -341,7 +341,7 @@
         gap: 24px;
         grid-template-columns: repeat(3, minmax(0, 1fr));
         margin: 0 auto 24px;
-        max-width: 820px;
+        max-width: 1120px;
         width: 100%;
       }
 
@@ -352,22 +352,29 @@
       .partner-title {
         color: #858c87;
         display: block;
-        font-size: 12px;
-        font-weight: 500;
-        letter-spacing: 4px;
+        font-size: 14px;
+        font-weight: 400;
+        letter-spacing: 5px;
         margin-bottom: 16px;
         text-transform: uppercase;
       }
 
       .partner-item img {
         display: inline-block;
-        height: 70px;
-        max-width: 210px;
+        height: auto;
         width: auto;
       }
 
+      .partner-item.uludag img {
+        width: 174px;
+      }
+
       .partner-item.deqx img {
-        max-width: 260px;
+        width: 228px;
+      }
+
+      .partner-item.sika img {
+        width: 109px;
       }
 
       @media (max-width: 1000px) {
@@ -485,19 +492,22 @@
         }
 
         .partner-title {
-          font-size: 9px;
-          font-weight: 500;
-          letter-spacing: 2.5px;
+          font-size: 10px;
+          font-weight: 400;
+          letter-spacing: 2.8px;
           margin-bottom: 10px;
         }
 
-        .partner-item img {
-          height: 42px;
-          max-width: 98px;
+        .partner-item.uludag img {
+          width: 96px;
         }
 
         .partner-item.deqx img {
-          max-width: 132px;
+          width: 126px;
+        }
+
+        .partner-item.sika img {
+          width: 60px;
         }
       }
 
@@ -532,7 +542,7 @@
             <div class="loader" data-loader>Dammer wordt geladen...</div>
           </div>
           <div class="partner-strip" aria-label="Materiaalpartners">
-            <div class="partner-item">
+            <div class="partner-item uludag">
               <span class="partner-title">Kussens</span>
               <img src="images/partner-uludag.png?v=1" alt="Uludag Vinyl">
             </div>
@@ -540,7 +550,7 @@
               <span class="partner-title">Teakdeck</span>
               <img src="images/partner-deqx.png?v=1" alt="DEQX engineered deck system">
             </div>
-            <div class="partner-item">
+            <div class="partner-item sika">
               <span class="partner-title">Verlijming</span>
               <img src="images/partner-sika.svg?v=1" alt="Sika">
             </div>
