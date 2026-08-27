@@ -114,7 +114,7 @@
       .viewer {
         background: radial-gradient(circle at 58% 47%, rgba(255,255,255,.98), rgba(248,249,246,.86) 48%, rgba(241,244,240,.94) 86%), #f3f5f1;
         display: grid;
-        grid-template-rows: auto minmax(0, 1fr) auto;
+        grid-template-rows: auto minmax(0, 1fr) auto auto;
         overflow: hidden;
         padding: 32px 32px 18px;
         padding: clamp(26px, 3.2vw, 48px) clamp(24px, 4vw, 66px) 18px;
@@ -233,7 +233,7 @@
         align-items: baseline;
         display: flex;
         justify-content: space-between;
-        margin-bottom: 17px;
+        margin-bottom: 8px;
       }
 
       .control-heading h2 {
@@ -246,6 +246,15 @@
         color: #788179;
         font-size: 11px;
         font-weight: 600;
+      }
+
+      .control-subtitle {
+        color: #858c87;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 1px;
+        line-height: 1.35;
+        margin: 0 0 16px;
       }
 
       .swatches {
@@ -326,6 +335,43 @@
         text-align: center;
       }
 
+      .partner-strip {
+        align-items: end;
+        display: grid;
+        gap: 24px;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        margin: 0 auto 18px;
+        max-width: 740px;
+        width: 100%;
+      }
+
+      .partner-item {
+        text-align: center;
+      }
+
+      .partner-title {
+        color: #858c87;
+        display: block;
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 3px;
+        margin-bottom: 14px;
+        text-transform: uppercase;
+      }
+
+      .partner-item img {
+        display: inline-block;
+        height: 44px;
+        max-width: 150px;
+        object-fit: contain;
+        width: auto;
+      }
+
+      .partner-item.deqx img {
+        height: 46px;
+        max-width: 190px;
+      }
+
       @media (max-width: 1000px) {
         .configurator {
           grid-template-columns: 1fr;
@@ -384,7 +430,7 @@
         }
 
         .viewer {
-          grid-template-rows: auto minmax(390px, 54vh) auto;
+          grid-template-rows: auto minmax(390px, 54vh) auto auto;
           min-height: 520px;
           padding: 22px 16px 8px;
         }
@@ -419,6 +465,12 @@
           gap: 8px;
         }
 
+        .control-subtitle {
+          font-size: 11px;
+          letter-spacing: .8px;
+          margin-bottom: 16px;
+        }
+
         .swatch {
           height: 34px;
           width: 34px;
@@ -427,6 +479,27 @@
         .swatch.selected::after {
           left: 11px;
           top: 8px;
+        }
+
+        .partner-strip {
+          gap: 10px;
+          margin-bottom: 12px;
+        }
+
+        .partner-title {
+          font-size: 9px;
+          letter-spacing: 2px;
+          margin-bottom: 8px;
+        }
+
+        .partner-item img {
+          height: 28px;
+          max-width: 82px;
+        }
+
+        .partner-item.deqx img {
+          height: 30px;
+          max-width: 112px;
         }
       }
 
@@ -460,6 +533,20 @@
           <div class="stage" data-stage>
             <div class="loader" data-loader>Dammer wordt geladen...</div>
           </div>
+          <div class="partner-strip" aria-label="Materiaalpartners">
+            <div class="partner-item">
+              <span class="partner-title">Kussens</span>
+              <img src="images/partner-uludag.jpg?v=1" alt="Uludag Vinyl">
+            </div>
+            <div class="partner-item deqx">
+              <span class="partner-title">Teakdeck</span>
+              <img src="images/partner-deqx.png?v=1" alt="DEQX engineered deck system">
+            </div>
+            <div class="partner-item">
+              <span class="partner-title">Verlijming</span>
+              <img src="images/partner-sika.svg?v=1" alt="Sika">
+            </div>
+          </div>
           <p class="viewer-note">Kleuren op het scherm kunnen afwijken van de werkelijke materialen.</p>
         </section>
 
@@ -486,6 +573,7 @@
               <h2 id="kussens-title">Kussens</h2>
               <span data-chosen>Origineel</span>
             </div>
+            <p class="control-subtitle">Marine vinyl &bull; Uludag Vinyl</p>
             <div class="swatches"></div>
             <button class="original-link" type="button">Gebruik originele kleur</button>
           </section>
@@ -495,6 +583,7 @@
               <h2 id="teak-title">Teakdeck</h2>
               <span data-chosen>Origineel</span>
             </div>
+            <p class="control-subtitle">Engineered deck system &bull; DEQX met Sika</p>
             <div class="swatches"></div>
             <button class="original-link" type="button">Gebruik originele kleur</button>
           </section>
